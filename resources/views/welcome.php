@@ -3,4 +3,4 @@
 echo $title;
 echo "<h1>HELLO WORLD</h1>";
 ?>
-<a href="<?= base_url()?>">test</a>
+<a href="<?= url('test')?>">test</a>

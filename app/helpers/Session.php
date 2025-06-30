@@ -69,5 +69,3 @@ class Session {
         return isset($_SESSION['flash'][$key]);
     }
 }
-
-?>

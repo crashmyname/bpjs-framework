@@ -1,15 +1,17 @@
 <?php
 namespace Helpers;
-require_once __DIR__ . '/helper.php';
-require_once __DIR__ . '/Prefix.php';
 
 class Bpjs
 {
+    protected $migrationLogFile = 'database/migrations/.migrated.json';
     protected $commands = [
         'make:model' => 'createModel',
         'make:controller' => 'createController',
         'make:import' => 'createImport',
         'make:export' => 'createExport',
+        'make:migration' => 'createMigration',
+        'db:migrate' => 'runMigrations',
+        'db:rollback' => 'rollbackMigration',
         'serve' => 'Serve',
         // Tambahkan perintah lainnya di sini
     ];
@@ -35,7 +37,7 @@ class Bpjs
             echo "Nama model harus diberikan!\n";
             return;
         }
-        $modelTemplate = "<?php\n\nnamespace App\Models;\nuse Support\BaseModel;\n\nclass $name extends BaseModel\n{\n    // Model logic here\n}\n";
+        $modelTemplate = "<?php\n\nnamespace App\Models;\nuse Helpers\BaseModel;\n\nclass $name extends BaseModel\n{\n    // Model logic here\n}\n";
         $filePath = "app/Models/{$name}.php";
         if (file_exists($filePath)) {
             echo "Model $name sudah ada!\n";
@@ -99,7 +101,7 @@ class Bpjs
         }
 
         $isResource = in_array('--resource', $options);
-        $controllerTemplate = "<?php\n\nnamespace {$namespace};\n\nuse Support\BaseController;\nuse Support\Request;\nuse Support\Validator;\nuse Support\View;\nuse Support\CSRFToken;\n\nclass {$className} extends BaseController\n{\n";
+        $controllerTemplate = "<?php\n\nnamespace {$namespace};\n\nuse Helpers\BaseController;\nuse Helpers\Request;\nuse Helpers\Validator;\nuse Helpers\View;\nuse Helpers\CSRFToken;\n\nclass {$className} extends BaseController\n{\n";
         if ($isResource) {
             $controllerTemplate .= "    public function index()\n    {\n        // Tampilkan semua resource\n    }\n\n";
             $controllerTemplate .= "    public function show(\$id)\n    {\n        // Tampilkan resource dengan ID: \$id\n    }\n\n";
@@ -118,6 +120,144 @@ class Bpjs
         } else {
             file_put_contents($filePath, $controllerTemplate);
             echo "Controller {$name} berhasil dibuat di {$filePath}!\n";
+        }
+    }
+
+    protected function createMigration($name)
+    {
+        if (!$name) {
+            echo "Nama migration harus diberikan!\n";
+            return;
+        }
+
+        $timestamp = date('Y_m_d_His');
+        $fileName = "{$timestamp}_{$name}.php";
+        $filePath = "database/migrations/{$fileName}";
+
+        // Pastikan direktori ada
+        if (!is_dir('database/migrations')) {
+            mkdir('database/migrations', 0777, true);
+        }
+
+        if (preg_match('/create_(.*?)_table/', $fileName, $matches)) {
+            $table = $matches[1];
+            echo $table;
+        }
+
+        // Template migration
+        $className = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+        $migrationTemplate = "<?php\n\n";
+        $migrationTemplate .= "use PDO;\n\n";
+        $migrationTemplate .= "use Helpers\SchemaBuilder;\n\n";
+        $migrationTemplate .= "class {$className}\n";
+        $migrationTemplate .= "{\n";
+        $migrationTemplate .= "    public function up(PDO \$pdo)\n";
+        $migrationTemplate .= "    {\n";
+        $migrationTemplate .= "        \$table = new SchemaBuilder('$table');\n";
+        $migrationTemplate .= "        \$sql = \$table->id()\n";
+        $migrationTemplate .= "        ->timestamp('created_at')->default('CURRENT_TIMESTAMP')\n";
+        $migrationTemplate .= "        ->buildCreateSQL();\n";
+        $migrationTemplate .= "        \$pdo->exec(\$sql);\n";
+        $migrationTemplate .= "    }\n\n";
+        $migrationTemplate .= "    public function down(PDO \$pdo)\n";
+        $migrationTemplate .= "    {\n";
+        $migrationTemplate .= "        \$table = new SchemaBuilder('$table');\n";
+        $migrationTemplate .= "        \$pdo->exec(\$table->buildDropSQL());\n";
+        $migrationTemplate .= "    }\n";
+        $migrationTemplate .= "}\n";
+
+        file_put_contents($filePath, $migrationTemplate);
+        echo "Migration $fileName berhasil dibuat!\n";
+    }
+    protected function runMigrations()
+    {
+        $migrationPath = 'database/migrations';
+        if (!is_dir($migrationPath)) {
+            echo "Folder migration tidak ditemukan.\n";
+            return;
+        }
+
+        $files = scandir($migrationPath);
+        
+        $pdo = new \PDO(env('DB_CONNECTION','mysql').':host='.env('DB_HOST','127.0.0.1').';dbname='.env('DB_DATABASE'),env('DB_USERNAME'), env('DB_PASSWORD'));
+
+        foreach ($files as $file) {
+            if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
+                require_once "$migrationPath/$file";
+                $className = $this->getClassNameFromFile($file);
+                if (class_exists($className)) {
+                    $migration = new $className();
+                    if (method_exists($migration, 'up')) {
+                        $migration->up($pdo);
+                        $this->logMigration($file);
+                        echo "Migration $file berhasil dijalankan.\n";
+                    }
+                }
+            }
+        }
+    }
+
+    protected function getClassNameFromFile($file)
+    {
+        $name = pathinfo($file, PATHINFO_FILENAME);
+        $name = preg_replace('/^\d+_/', '', $name); // hapus timestamp
+        return str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+    }
+
+    protected function logMigration($file)
+    {
+        $data = $this->getMigrationLog();
+        $data[] = $file;
+        file_put_contents($this->migrationLogFile, json_encode($data));
+    }
+
+    protected function removeLastMigration()
+    {
+        $data = $this->getMigrationLog();
+        array_pop($data);
+        file_put_contents($this->migrationLogFile, json_encode($data));
+    }
+
+    protected function getMigrationLog()
+    {
+        if (!file_exists($this->migrationLogFile)) {
+            return [];
+        }
+        return json_decode(file_get_contents($this->migrationLogFile), true);
+    }
+
+    protected function rollbackMigration()
+    {
+        $migrated = $this->getMigrationLog();
+        if (empty($migrated)) {
+            echo "Tidak ada migrasi yang bisa di-rollback.\n";
+            return;
+        }
+
+        $lastFile = array_pop($migrated);
+        $path = "database/migrations/$lastFile";
+
+        if (!file_exists($path)) {
+            echo "File migration $lastFile tidak ditemukan.\n";
+            return;
+        }
+
+        require_once $path;
+        $className = $this->getClassNameFromFile($lastFile);
+
+        $pdo = new \PDO(env('DB_CONNECTION','mysql').':host='.env('DB_HOST','127.0.0.1').';dbname='.env('DB_DATABASE'),env('DB_USERNAME'), env('DB_PASSWORD'));
+
+        if (class_exists($className)) {
+            $migration = new $className();
+            if (method_exists($migration, 'down')) {
+                $migration->down($pdo);
+                $this->removeLastMigration();
+                echo "Rollback $lastFile berhasil.\n";
+            } else {
+                echo "Method down() tidak ditemukan di $className.\n";
+            }
+        } else {
+            echo "Class $className tidak ditemukan dalam $lastFile.\n";
         }
     }
 
@@ -150,5 +290,3 @@ class Bpjs
         exec("php -S {$host}:{$port}");
     }
 }
-
-?>

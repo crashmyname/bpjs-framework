@@ -386,3 +386,7 @@ function api_prefix() {
 function app_base_path(): string {
     return rtrim(str_replace('/index.php', '', $_SERVER['SCRIPT_NAME']), '/');
 }
+
+function url($params){
+    return base_url().$params;
+}

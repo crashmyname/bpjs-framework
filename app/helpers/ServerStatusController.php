@@ -10,7 +10,7 @@ class ServerStatusController
         // Mengambil penggunaan memori
         $memoryUsage = shell_exec("free -m | awk '/Mem:/ { print $3 }'");
         // Mengambil penggunaan disk
-        $diskUsage = shell_exec("df -h | awk '$NF==\"/\"{printf \"%d\", $5}'");
+        $diskUsage = shell_exec("df -h | awk \"\$NF==\\\"/\\\"{printf \\\"%d\\\", \$5}\"");
 
         // Mengembalikan data dalam bentuk array
         return [

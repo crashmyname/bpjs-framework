@@ -110,5 +110,3 @@ class Request {
         return $this->files[$key]['tmp_name'] ?? '';
     }
 }
-
-?>

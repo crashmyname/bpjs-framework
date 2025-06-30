@@ -58,15 +58,19 @@ class ErrorHandler
     // Menampilkan halaman error dengan informasi tambahan
     public static function renderErrorPage($message, $file, $line, $trace = null)
     {
-        $data = [
-            'message' => $message,
-            'file' => $file,
-            'line' => $line,
-            'trace' => $trace,
-            'additionalData' => self::$additionalData,
-        ];
-        include BPJS_BASE_PATH . '/app/handle/errors/page_error.php';
-        exit();
+        if(env('APP_DEBUG') == true){
+            $data = [
+                'message' => $message,
+                'file' => $file,
+                'line' => $line,
+                'trace' => $trace,
+                'additionalData' => self::$additionalData,
+            ];
+            include BPJS_BASE_PATH . '/app/handle/errors/page_error.php';
+            exit();
+        } else {
+            View::error('500');
+        }
     }
 
     // Tambahkan data tambahan (dinamis)

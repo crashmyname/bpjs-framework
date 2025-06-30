@@ -275,4 +275,3 @@ class Api
         exit(); // Menghentikan eksekusi skrip setelah error page ditampilkan
     }
 }
-?>

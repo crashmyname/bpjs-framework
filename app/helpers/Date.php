@@ -79,4 +79,3 @@ class Date{
         return ($date >= $minDate && $date <= $maxDate);
     }
 }
-?>

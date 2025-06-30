@@ -42,6 +42,3 @@ class ExceptionHandler
         exit();
     }
 }
-
-
-?>

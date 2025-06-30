@@ -19,5 +19,3 @@ class Response
         return self::json(['success' => false, 'message' => $message], $status);
     }
 }
-
-?>

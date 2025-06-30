@@ -53,7 +53,7 @@ class View
     {
         try{
             extract($data);
-            $viewPath = __DIR__ . '/../../app/Handle/' . $view . '.php';
+            $viewPath = __DIR__ . '/../../app/handle/' . $view . '.php';
             if (!file_exists($viewPath)) {
                 throw new \Exception("View file not found: $viewPath");
             }
@@ -62,7 +62,7 @@ class View
             $content = ob_get_clean();
 
             if ($layout) {
-                $layoutPath = __DIR__ . '/../../app/Handle/' . $layout . '.php';
+                $layoutPath = __DIR__ . '/../../app/handle/' . $layout . '.php';
                 if (file_exists($layoutPath)) {
                     include $layoutPath;
                 } else {
@@ -143,5 +143,3 @@ class View
         return $content; // return plain view
     }
 }
-
-?>

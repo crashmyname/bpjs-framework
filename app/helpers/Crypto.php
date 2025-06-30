@@ -46,4 +46,3 @@ class Crypto
         return base64_decode(strtr($data, '-_', '+/'));
     }
 }
-?>

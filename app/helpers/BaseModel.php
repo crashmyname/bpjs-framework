@@ -793,4 +793,3 @@ class BaseModel
         $this->attributes[$name] = $value;
     }
 }
-?>

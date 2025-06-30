@@ -118,4 +118,3 @@ class Mailer
         return $response;
     }
 }
-?>
