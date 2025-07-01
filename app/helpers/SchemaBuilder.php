@@ -8,7 +8,6 @@ class SchemaBuilder
     protected array $columns = [];
     protected array $constraints = [];
 
-    
     public function __construct(string $table)
     {
         $this->table = $table;
@@ -27,7 +26,7 @@ class SchemaBuilder
         $this->constraints[] = "UNIQUE (`$cols`)";
         return $this;
     }
-    
+
     public function id(string $name = 'id')
     {
         $column = new ColumnDefinition('BIGINT', $name);
@@ -40,21 +39,77 @@ class SchemaBuilder
     {
         $column = new ColumnDefinition("VARCHAR($length)", $name);
         $this->columns[] = $column;
-        return $column;
+        return $this;
     }
 
     public function integer(string $name)
     {
         $column = new ColumnDefinition("INT", $name);
         $this->columns[] = $column;
-        return $column;
+        return $this;
+    }
+
+    public function bigInteger(string $name)
+    {
+        $column = new ColumnDefinition("BIGINT",$name);
+        $this->columns[] = $column;
+        return $this;
+    }
+
+    public function text(string $name)
+    {
+        $column = new ColumnDefinition("TEXT",$name);
+        $this->columns[] = $column;
+        return $this;
     }
 
     public function boolean(string $name)
     {
         $column = new ColumnDefinition("TINYINT(1)", $name);
         $this->columns[] = $column;
-        return $column;
+        return $this;
+    }
+
+    public function date(string $name)
+    {
+        $column = new ColumnDefinition("DATE",$name);
+        $this->columns[] = $column;
+        return $this;
+    }
+
+    public function dateTime(string $name)
+    {
+        $column = new ColumnDefinition("DATETIME",$name);
+        $this->columns[] = $column;
+        return $this;
+    }
+
+    public function time(string $name)
+    {
+        $column = new ColumnDefinition("TIME",$name);
+        $this->columns[] = $column;
+        return $this;
+    }
+
+    public function decimal(string $name, string $length = '10,2')
+    {
+        $column = new ColumnDefinition("DECIMAL($length)",$name);
+        $this->columns[] = $column;
+        return $this;
+    }
+
+    public function float(string $name)
+    {
+        $column = new ColumnDefinition("FLOAT",$name);
+        $this->columns[] = $column;
+        return $this;
+    }
+
+    public function double(string $name)
+    {
+        $column = new ColumnDefinition("DOUBLE",$name);
+        $this->columns[] = $column;
+        return $this;
     }
 
     public function timestamp(string $name)
@@ -63,29 +118,24 @@ class SchemaBuilder
         $this->columns[] = $column;
         return $column;
     }
-    
-    // public function default(string $value)
-    // {
-    //     $last = array_pop($this->columns);
-    //     $last .= " DEFAULT $value";
-    //     $this->columns[] = $last;
-    //     return $this;
-    // }
-
-    public function dropColumn(string $column)
-    {
-        return "ALTER TABLE `{$this->table}` DROP COLUMN `$column`";
-    }
-
-    public function renameColumn(string $from, string $to, string $type)
-    {
-        return "ALTER TABLE `{$this->table}` CHANGE `$from` `$to` $type";
-    }
 
     public function buildCreateSQL(): string
     {
-        $columnsSQL = array_map(fn($col) => $col->build(), $this->columns);
-        $all = array_merge($columnsSQL, $this->constraints);
+        $columnsSQL = [];
+        $foreigns = [];
+
+        foreach ($this->columns as $col) {
+            $build = $col->build();
+            if (str_contains($build, "FOREIGN KEY")) {
+                [$main, $fk] = explode(",\n    FOREIGN KEY", $build, 2);
+                $columnsSQL[] = $main;
+                $foreigns[] = "FOREIGN KEY" . $fk;
+            } else {
+                $columnsSQL[] = $build;
+            }
+        }
+
+        $all = array_merge($columnsSQL, $this->constraints, $foreigns);
         return "CREATE TABLE `{$this->table}` (\n    " . implode(",\n    ", $all) . "\n)";
     }
 

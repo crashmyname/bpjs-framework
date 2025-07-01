@@ -139,29 +139,38 @@ class Bpjs
             mkdir('database/migrations', 0777, true);
         }
 
+        // Ambil nama tabel dari pola
+        $table = 'unknown'; // default untuk jaga-jaga
         if (preg_match('/create_(.*?)_table/', $fileName, $matches)) {
             $table = $matches[1];
-            echo $table;
         }
 
-        // Template migration
+        // Buat nama class berdasarkan input
         $className = str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
+
         $migrationTemplate = "<?php\n\n";
-        $migrationTemplate .= "use PDO;\n\n";
-        $migrationTemplate .= "use Helpers\SchemaBuilder;\n\n";
+        $migrationTemplate .= "\n";
+        $migrationTemplate .= "use Helpers\\SchemaBuilder;\n\n";
         $migrationTemplate .= "class {$className}\n";
         $migrationTemplate .= "{\n";
-        $migrationTemplate .= "    public function up(PDO \$pdo)\n";
+        $migrationTemplate .= "    public function up(\PDO \$pdo)\n";
         $migrationTemplate .= "    {\n";
-        $migrationTemplate .= "        \$table = new SchemaBuilder('$table');\n";
-        $migrationTemplate .= "        \$sql = \$table->id()\n";
-        $migrationTemplate .= "        ->timestamp('created_at')->default('CURRENT_TIMESTAMP')\n";
-        $migrationTemplate .= "        ->buildCreateSQL();\n";
-        $migrationTemplate .= "        \$pdo->exec(\$sql);\n";
+        $migrationTemplate .= "        \$table = new SchemaBuilder('{$table}');\n";
+        $migrationTemplate .= "        \$table->id();\n";
+        $migrationTemplate .= "        \$table->timestamp('created_at')->default('CURRENT_TIMESTAMP');\n";
+        $migrationTemplate .= "        \$table->timestamp('updated_at')->default('CURRENT_TIMESTAMP');\n";
+        $migrationTemplate .= "        \$sql = \$table->buildCreateSQL();\n";
+        $migrationTemplate .= "        try {\n";
+        $migrationTemplate .= "             \$pdo->exec(\$sql);\n";
+        $migrationTemplate .= "             echo \"✅ Table '{$table}' berhasil dibuat\\n\";\n";
+        $migrationTemplate .= "        } catch (\PDOException \$e) {\n";
+        $migrationTemplate .= "             echo \"❌ Gagal membuat tabel: \"" . ".\$e->getMessage().\"\\n\";\n";
+        $migrationTemplate .= "             echo \"SQL:\".\$sql;\n";
+        $migrationTemplate .= "        }\n";
         $migrationTemplate .= "    }\n\n";
         $migrationTemplate .= "    public function down(PDO \$pdo)\n";
         $migrationTemplate .= "    {\n";
-        $migrationTemplate .= "        \$table = new SchemaBuilder('$table');\n";
+        $migrationTemplate .= "        \$table = new SchemaBuilder('{$table}');\n";
         $migrationTemplate .= "        \$pdo->exec(\$table->buildDropSQL());\n";
         $migrationTemplate .= "    }\n";
         $migrationTemplate .= "}\n";
@@ -177,20 +186,55 @@ class Bpjs
             return;
         }
 
+        $migrated = $this->getMigrationLog() ?? [];
         $files = scandir($migrationPath);
-        
-        $pdo = new \PDO(env('DB_CONNECTION','mysql').':host='.env('DB_HOST','127.0.0.1').';dbname='.env('DB_DATABASE'),env('DB_USERNAME'), env('DB_PASSWORD'));
+
+        $pdo = new \PDO(
+            env('DB_CONNECTION', 'mysql') . ':host=' . env('DB_HOST', '127.0.0.1') . ';dbname=' . env('DB_DATABASE'),
+            env('DB_USERNAME'),
+            env('DB_PASSWORD'),
+            [
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+            ]
+        );
 
         foreach ($files as $file) {
             if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
                 require_once "$migrationPath/$file";
                 $className = $this->getClassNameFromFile($file);
-                if (class_exists($className)) {
-                    $migration = new $className();
-                    if (method_exists($migration, 'up')) {
+
+                if (!class_exists($className)) {
+                    echo "❌ Class $className tidak ditemukan dalam $file\n";
+                    continue;
+                }
+
+                $migration = new $className();
+
+                if (in_array($file, $migrated)) {
+                    echo "⚠️  Migration $file sudah pernah dijalankan. Melakukan rollback...\n";
+                    if (method_exists($migration, 'down')) {
+                        try {
+                            $migration->down($pdo);
+                            echo "🔁 Rollback migration $file berhasil.\n";
+                        } catch (\PDOException $e) {
+                            echo "❌ Gagal rollback migration $file: " . $e->getMessage() . "\n";
+                            continue;
+                        }
+                    } else {
+                        echo "❌ Method down() tidak ditemukan di $className, skip.\n";
+                        continue;
+                    }
+                }
+
+                if (method_exists($migration, 'up')) {
+                    echo "⏳ Menjalankan migration: $className\n";
+                    try {
                         $migration->up($pdo);
                         $this->logMigration($file);
-                        echo "Migration $file berhasil dijalankan.\n";
+                        echo "✅ Migration $file berhasil dijalankan.\n";
+                    } catch (\PDOException $e) {
+                        echo "❌ Error pada migration $file: " . $e->getMessage() . "\n";
                     }
                 }
             }
@@ -200,15 +244,25 @@ class Bpjs
     protected function getClassNameFromFile($file)
     {
         $name = pathinfo($file, PATHINFO_FILENAME);
-        $name = preg_replace('/^\d+_/', '', $name); // hapus timestamp
+
+        // Hapus bagian timestamp: 2025_06_30_131244_
+        $name = preg_replace('/^\d{4}_\d{2}_\d{2}_\d{6}_/', '', $name);
+
+        // Ubah ke CamelCase class name
         return str_replace(' ', '', ucwords(str_replace('_', ' ', $name)));
     }
 
-    protected function logMigration($file)
+    protected function logMigration(string $file)
     {
-        $data = $this->getMigrationLog();
-        $data[] = $file;
-        file_put_contents($this->migrationLogFile, json_encode($data));
+        $logPath = 'database/migrations/.migrated.json';
+        $migrated = file_exists($logPath) ? json_decode(file_get_contents($logPath), true) : [];
+
+        // Hapus dulu jika sudah ada (untuk menggantikan versi lama)
+        $migrated = array_filter($migrated, fn($f) => $f !== $file);
+
+        $migrated[] = $file;
+
+        file_put_contents($logPath, json_encode($migrated, JSON_PRETTY_PRINT));
     }
 
     protected function removeLastMigration()
@@ -221,16 +275,25 @@ class Bpjs
     protected function getMigrationLog()
     {
         if (!file_exists($this->migrationLogFile)) {
+            file_put_contents($this->migrationLogFile, json_encode([]));
             return [];
         }
-        return json_decode(file_get_contents($this->migrationLogFile), true);
+
+        $content = file_get_contents($this->migrationLogFile);
+        $data = json_decode($content, true);
+
+        if (!is_array($data)) {
+            return [];
+        }
+
+        return $data;
     }
 
     protected function rollbackMigration()
     {
         $migrated = $this->getMigrationLog();
         if (empty($migrated)) {
-            echo "Tidak ada migrasi yang bisa di-rollback.\n";
+            echo "❌ Tidak ada migrasi yang bisa di-rollback.\n";
             return;
         }
 
@@ -252,7 +315,7 @@ class Bpjs
             if (method_exists($migration, 'down')) {
                 $migration->down($pdo);
                 $this->removeLastMigration();
-                echo "Rollback $lastFile berhasil.\n";
+                echo "✅ Rollback $lastFile berhasil.\n";
             } else {
                 echo "Method down() tidak ditemukan di $className.\n";
             }

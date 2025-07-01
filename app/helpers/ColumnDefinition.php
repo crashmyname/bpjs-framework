@@ -30,9 +30,12 @@ class ColumnDefinition
 
     public function default($value)
     {
-        $val = is_string($value) && strtoupper($value) !== 'CURRENT_TIMESTAMP'
-            ? "'$value'" : $value;
-        $this->modifiers[] = "DEFAULT $val";
+        if (is_string($value) && strtoupper($value) === 'CURRENT_TIMESTAMP') {
+            $this->modifiers[] = "DEFAULT CURRENT_TIMESTAMP";
+        } else {
+            $val = is_string($value) ? "'$value'" : $value;
+            $this->modifiers[] = "DEFAULT $val";
+        }
         return $this;
     }
 
@@ -80,14 +83,17 @@ class ColumnDefinition
 
     public function build(): string
     {
-        $sql = "`{$this->name}` {$this->type}" . (!empty($this->modifiers) ? ' ' . implode(' ', $this->modifiers) : '');
+        $sql = "`{$this->name}` {$this->type}";
+        if (!empty($this->modifiers)) {
+            $sql .= ' ' . implode(' ', $this->modifiers);
+        }
 
-        // Tambah foreign constraint jika ada
         if ($this->foreignKey && $this->foreignTable) {
-            $sql .= ",\n    FOREIGN KEY (`{$this->name}`) REFERENCES `{$this->foreignTable}`(`{$this->foreignKey}`)";
+            $fk = "FOREIGN KEY (`{$this->name}`) REFERENCES `{$this->foreignTable}`(`{$this->foreignKey}`)";
             if ($this->onDelete) {
-                $sql .= " ON DELETE {$this->onDelete}";
+                $fk .= " ON DELETE {$this->onDelete}";
             }
+            return "$sql,\n    $fk";
         }
 
         return $sql;

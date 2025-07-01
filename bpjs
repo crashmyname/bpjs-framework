@@ -2,6 +2,7 @@
 $baseDir = realpath(__DIR__.'/');
 require_once $baseDir.'/vendor/autoload.php';
 use Helpers\Bpjs;
+require_once $baseDir.'/app/helpers/helper.php';
 
 $cli = new Bpjs();
 $cli->run($argv);
