@@ -2,7 +2,7 @@
 namespace Helpers;
 use App\Models\User;
 use Helpers\Session;
-use Helpers\SessionMiddleware;
+use Middlewares\SessionMiddleware;
 
 class Auth{
     public static function attempt($credentials)

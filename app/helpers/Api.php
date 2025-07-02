@@ -9,7 +9,8 @@ class Api
     private static $names = [];
     private static $prefix;
     private static $groupMiddlewares = []; // Menyimpan middleware grup sementara
-
+    private static $lastRouteMethod = null;
+    private static $lastRouteUri = null;
     // Inisialisasi API dengan prefix
     public static function init($prefix = '')
     {
@@ -113,7 +114,6 @@ class Api
     public static function dispatch(): \Bpjs\Core\Response
     {
         try {
-            SessionMiddleware::start();
 
             $method = $_SERVER['REQUEST_METHOD'];
             if ($method === 'POST' && isset($_POST['_method'])) {

@@ -39,6 +39,13 @@
     <h3>Internal Server Error</h3>
     <p>Sorry! Something went wrong on our end. Please try again later.</p>
     <a href="<?= base_url()?>" class="btn btn-primary">Go Home</a>
+    <?php
+        if (isset($e)) {
+            echo "<pre>" . $e->getMessage() . "</pre>";
+            echo "<pre>" . $e->getTraceAsString() . "</pre>";
+        }
+    ?>
+
 </div>
 
 </body>

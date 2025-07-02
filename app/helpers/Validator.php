@@ -1,7 +1,7 @@
 <?php
 namespace Helpers;
 
-use Config\Database;
+use Helpers\Database;
 
 class Validator {
     protected $errors = [];
@@ -109,7 +109,7 @@ class Validator {
     }
 
     protected function validateDate($field, $value, $format) {
-        $d = DateTime::createFromFormat($format, $value);
+        $d = Date::createFromFormat($format, $value);
         if (!$d || $d->format($format) !== $value) {
             $this->errors[$field][] = "$field must be a valid date in the format $format.";
         }
@@ -169,8 +169,7 @@ class Validator {
     }
 
     private function connect() {
-        $database = new Database();
-        $this->connection = $database->getConnection();
+        $this->connection = Database::connection();
         if ($this->connection === null) {
             die('Connection Failed');
         }

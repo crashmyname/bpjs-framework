@@ -8,7 +8,7 @@ use Helpers\Database;
 class LogController {
     // Fungsi untuk menambahkan log dengan request dan response data
     public static function addLog($url, $httpMethod, $statusCode, $executionTime, $requestData = null, $responseData = null) {
-        $db = Database::getConnection();
+        $db = Database::connection();
         
         // Cek apakah requestData dan responseData ada dan valid
         $requestData = $requestData ? json_encode($requestData) : null;
@@ -22,7 +22,7 @@ class LogController {
 
     // Fungsi untuk mendapatkan logs terbaru
     public static function getLogs() {
-        $db = Database::getConnection();
+        $db = Database::connection();
         $stmt = $db->prepare("SELECT * FROM logs ORDER BY created_at DESC LIMIT 10");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC); // Mengambil log terbaru

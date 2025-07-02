@@ -1,5 +1,6 @@
 <?php
 namespace Helpers;
+use Bpjs\Core\Request;
 use Helpers\CSRFToken;
 use Helpers\View;
 

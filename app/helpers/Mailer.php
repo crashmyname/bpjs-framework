@@ -1,120 +1,67 @@
 <?php
-
 namespace Helpers;
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 class Mailer
 {
-    private $to;
-    private $subject;
-    private $message;
-    private $headers = [];
-    private $attachments = [];
-    private $smtpSettings = [];
-    private $useSMTP = false;
+    protected PHPMailer $mail;
 
-    public function __construct($to = null, $subject = null, $message = null)
+    public function __construct()
     {
-        $this->to = $to;
-        $this->subject = $subject;
-        $this->message = $message;
-        $this->headers[] = "MIME-Version: 1.0";
-        $this->headers[] = "Content-type:text/html;charset=UTF-8";
-        $this->headers[] = 'From: no-reply@example.com';
+        $this->mail = new PHPMailer(true);
+
+        // SMTP Config dari .env
+        $this->mail->isSMTP();
+        $this->mail->Host       = env('SMTP_HOST');
+        $this->mail->SMTPAuth   = env('SMTP_AUTH', true);
+        $this->mail->Username   = env('SMTP_EMAIL');
+        $this->mail->Password   = env('SMTP_PASSWORD');
+        $this->mail->SMTPSecure = env('SMTP_SECURE', 'tls');
+        $this->mail->Port       = env('SMTP_PORT', 587);
+
+        // Default sender
+        $this->mail->setFrom(env('SMTP_EMAIL'), env('APP_NAME', 'Mailer'));
+        $this->mail->isHTML(true);
     }
 
-    public function setRecipient($to)
+    public static function make(): self
     {
-        $this->to = $to;
+        return new self();
     }
 
-    public function setSubject($subject)
+    public function to(string $email, string $name = ''): self
     {
-        $this->subject = $subject;
+        $this->mail->addAddress($email, $name);
+        return $this;
     }
 
-    public function setMessage($message)
+    public function subject(string $subject): self
     {
-        $this->message = $message;
+        $this->mail->Subject = $subject;
+        return $this;
     }
 
-    public function setFrom($from)
+    public function body(string $body): self
     {
-        $this->headers[] = "From: {$from}";
+        $this->mail->Body = $body;
+        return $this;
     }
 
-    public function addHeader($header)
+    public function addAttachment(string $filePath, string $name = ''): self
     {
-        $this->headers[] = $header;
+        $this->mail->addAttachment($filePath, $name);
+        return $this;
     }
 
-    public function addAttachment($filePath, $fileName = null)
+    public function send(): bool
     {
-        $this->attachments[] = [
-            'path' => $filePath,
-            'name' => $fileName ?: basename($filePath),
-        ];
-    }
-
-    public function useSMTP($host, $username, $password, $port = 587, $encryption = 'tls')
-    {
-        $this->useSMTP = true;
-        $this->smtpSettings = [
-            'host' => $host,
-            'username' => $username,
-            'password' => $password,
-            'port' => $port,
-            'encryption' => $encryption,
-        ];
-    }
-
-    public function send()
-    {
-        if ($this->useSMTP) {
-            return $this->sendWithSMTP();
-        } else {
-            $headers = implode("\r\n", $this->headers);
-            return mail($this->to, $this->subject, $this->message, $headers);
+        try {
+            return $this->mail->send();
+        } catch (Exception $e) {
+            error_log("Mailer error: " . $this->mail->ErrorInfo);
+            return false;
         }
-    }
-
-    private function sendWithSMTP()
-    {
-        // Penggunaan SMTP
-        $smtp = fsockopen($this->smtpSettings['host'], $this->smtpSettings['port']);
-        if (!$smtp) {
-            throw new \Exception('Could not connect to SMTP server');
-        }
-
-        $this->smtpCommand($smtp, 'EHLO ' . $this->smtpSettings['host']);
-        $this->smtpCommand($smtp, 'AUTH LOGIN');
-        $this->smtpCommand($smtp, base64_encode($this->smtpSettings['username']));
-        $this->smtpCommand($smtp, base64_encode($this->smtpSettings['password']));
-        $this->smtpCommand($smtp, 'MAIL FROM: <' . $this->headers['From'] . '>');
-        $this->smtpCommand($smtp, 'RCPT TO: <' . $this->to . '>');
-        $this->smtpCommand($smtp, 'DATA');
-
-        $message = "To: {$this->to}\r\n";
-        $message .= "Subject: {$this->subject}\r\n";
-        $message .= implode("\r\n", $this->headers) . "\r\n";
-        $message .= "\r\n" . $this->message . "\r\n.\r\n";
-
-        $this->smtpCommand($smtp, $message);
-        $this->smtpCommand($smtp, 'QUIT');
-        
-        fclose($smtp);
-
-        return true;
-    }
-
-    private function smtpCommand($smtp, $command)
-    {
-        fputs($smtp, $command . "\r\n");
-        $response = fgets($smtp, 515);
-
-        if (substr($response, 0, 3) != '250' && substr($response, 0, 3) != '334' && substr($response, 0, 3) != '354') {
-            throw new \Exception('SMTP Error: ' . $response);
-        }
-
-        return $response;
     }
 }

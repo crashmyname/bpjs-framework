@@ -8,11 +8,13 @@ class CreateUserTable
 {
     public function up(\PDO $pdo)
     {
-        $table = new SchemaBuilder('user');
+        $table = new SchemaBuilder('users');
         $table->id('userId');
         $table->string('nama',150);
         $table->string('email',150);
+        $table->string('password');
         $table->timestamp('created_at')->default('CURRENT_TIMESTAMP');
+        $table->timestamp('updated_at')->default('CURRENT_TIMESTAMP');
 
         $sql = $table->buildCreateSQL();
         try {
@@ -27,7 +29,7 @@ class CreateUserTable
 
     public function down(PDO $pdo)
     {
-        $table = new SchemaBuilder('user');
+        $table = new SchemaBuilder('users');
         $pdo->exec($table->buildDropSQL());
     }
 }

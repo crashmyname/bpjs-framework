@@ -9,6 +9,7 @@ class ColumnDefinition
     protected ?string $foreignKey = null;
     protected ?string $foreignTable = null;
     protected ?string $onDelete = null;
+    protected bool $nullable = false; // ← tambah ini
 
     public function __construct(string $type, string $name)
     {
@@ -18,13 +19,13 @@ class ColumnDefinition
 
     public function nullable()
     {
-        $this->modifiers[] = 'NULL';
+        $this->nullable = true;
         return $this;
     }
 
     public function notNullable()
     {
-        $this->modifiers[] = 'NOT NULL';
+        $this->nullable = false;
         return $this;
     }
 
@@ -84,6 +85,14 @@ class ColumnDefinition
     public function build(): string
     {
         $sql = "`{$this->name}` {$this->type}";
+
+        // Secara default NOT NULL kecuali diberi nullable()
+        if ($this->nullable) {
+            $sql .= ' NULL';
+        } else {
+            $sql .= ' NOT NULL';
+        }
+
         if (!empty($this->modifiers)) {
             $sql .= ' ' . implode(' ', $this->modifiers);
         }

@@ -4,7 +4,7 @@ namespace Helpers;
 
 use PDO;
 use PDOException;
-use Config\Database;
+use Helpers\Database;
 
 class DB
 {
@@ -22,7 +22,7 @@ class DB
     public static function getConnection()
     {
         if (self::$conn === null) {
-            self::$conn = Database::getConnection();
+            self::$conn = Database::connection();
         }
         return self::$conn;
     }
@@ -269,7 +269,7 @@ class DB
                 'line' => $exception->getLine(),
             ];
             extract($exceptionData);
-            include __DIR__ . '/../../app/Handle/errors/page_error.php';
+            include __DIR__ . '/../../app/handle/errors/page_error.php';
         }
         exit();
     }

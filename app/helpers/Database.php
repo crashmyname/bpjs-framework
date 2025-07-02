@@ -2,87 +2,69 @@
 namespace Helpers;
 
 use PDO;
-use PDOException;
+use Exception;
 
 class Database
 {
-    private static $conn = null;
+    protected static ?PDO $pdo = null;
 
-    public static function getConnection()
+    public static function connection(): PDO
     {
-        if (self::$conn !== null) {
-            return self::$conn;
+        if (self::$pdo !== null) {
+            return self::$pdo;
         }
 
-        $defaultEnv = [
-            'DB_CONNECTION' => 'mysql',
-            'DB_HOST' => '127.0.0.1',
-            'DB_PORT' => '3306',
-            'DB_DATABASE' => 'defaultdb',
-            'DB_USERNAME' => 'root',
-            'DB_PASSWORD' => '',
-        ];
+        $default = config('database.default', 'mysql');
+        $connectionKey = "database.connections.$default";
 
-        $envFilePath = __DIR__ . '/../../.env';
-        if (file_exists($envFilePath)) {
-            $env = parse_ini_file($envFilePath);
-            foreach ($defaultEnv as $key => $value) {
-                $_ENV[$key] = $env[$key] ?? $value;
-            }
-        } else {
-            $_ENV = $defaultEnv;
+        if (!config($connectionKey)) {
+            throw new Exception("Database connection [$default] not defined.");
         }
 
-        try {
-            $dsn = "{$_ENV['DB_CONNECTION']}:host={$_ENV['DB_HOST']};port={$_ENV['DB_PORT']};dbname={$_ENV['DB_DATABASE']}";
-            self::$conn = new PDO($dsn, $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD']);
-            self::$conn->exec("set names utf8");
-            self::$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            ErrorHandler::handleException($e);
+        return self::$pdo = self::connect($connectionKey);
+    }
+
+    protected static function connect(string $baseKey): PDO
+    {
+        $driver   = config("$baseKey.driver");
+
+        $host     = config("$baseKey.host", '127.0.0.1');
+        $port     = config("$baseKey.port", '3306');
+        $dbname   = config("$baseKey.database", 'bpjs');
+        $charset  = config("$baseKey.charset", 'utf8mb4');
+        $username = config("$baseKey.username", 'root');
+        $password = config("$baseKey.password", '');
+        $options  = config("$baseKey.options", [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]);
+
+        switch ($driver) {
+            case 'mysql':
+                $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=$charset";
+                break;
+
+            case 'pgsql':
+                $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
+                break;
+
+            case 'sqlite':
+                $dsn = "sqlite:$dbname";
+                break;
+
+            case 'sqlsrv':
+                $dsn = "sqlsrv:Server=$host,$port;Database=$dbname";
+                break;
+
+            default:
+                throw new Exception("Driver [$driver] not supported.");
         }
 
-        return self::$conn;
+        return new PDO($dsn, $username, $password, $options);
     }
 
-    // New function to execute a query with prepared statements
-    public static function query($sql, $params = [])
+    public static function disconnect(): void
     {
-        $stmt = self::getConnection()->prepare($sql);
-        $stmt->execute($params);
-        return $stmt;
-    }
-
-    public static function beginTransaction()
-    {
-        return self::getConnection()->beginTransaction();
-    }
-
-    public static function commit()
-    {
-        return self::getConnection()->commit();
-    }
-
-    public static function rollback()
-    {
-        return self::getConnection()->rollback();
-    }
-
-    public static function renderError($exception)
-    {
-        static $errorDisplayed = false;
-
-        if (!$errorDisplayed) {
-            $errorDisplayed = true;
-            http_response_code(500);
-            $exceptionData = [
-                'message' => $exception->getMessage(),
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
-            ];
-            extract($exceptionData);
-            include __DIR__ . '/../src/View/errors/page_error.php';
-        }
-        exit();
+        self::$pdo = null;
     }
 }

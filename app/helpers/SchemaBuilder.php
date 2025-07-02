@@ -39,77 +39,77 @@ class SchemaBuilder
     {
         $column = new ColumnDefinition("VARCHAR($length)", $name);
         $this->columns[] = $column;
-        return $this;
+        return $column;
     }
 
     public function integer(string $name)
     {
         $column = new ColumnDefinition("INT", $name);
         $this->columns[] = $column;
-        return $this;
+        return $column;
     }
 
     public function bigInteger(string $name)
     {
         $column = new ColumnDefinition("BIGINT",$name);
         $this->columns[] = $column;
-        return $this;
+        return $column;
     }
 
     public function text(string $name)
     {
         $column = new ColumnDefinition("TEXT",$name);
         $this->columns[] = $column;
-        return $this;
+        return $column;
     }
 
     public function boolean(string $name)
     {
         $column = new ColumnDefinition("TINYINT(1)", $name);
         $this->columns[] = $column;
-        return $this;
+        return $column;
     }
 
     public function date(string $name)
     {
         $column = new ColumnDefinition("DATE",$name);
         $this->columns[] = $column;
-        return $this;
+        return $column;
     }
 
     public function dateTime(string $name)
     {
         $column = new ColumnDefinition("DATETIME",$name);
         $this->columns[] = $column;
-        return $this;
+        return $column;
     }
 
     public function time(string $name)
     {
         $column = new ColumnDefinition("TIME",$name);
         $this->columns[] = $column;
-        return $this;
+        return $column;
     }
 
     public function decimal(string $name, string $length = '10,2')
     {
         $column = new ColumnDefinition("DECIMAL($length)",$name);
         $this->columns[] = $column;
-        return $this;
+        return $column;
     }
 
     public function float(string $name)
     {
         $column = new ColumnDefinition("FLOAT",$name);
         $this->columns[] = $column;
-        return $this;
+        return $column;
     }
 
     public function double(string $name)
     {
         $column = new ColumnDefinition("DOUBLE",$name);
         $this->columns[] = $column;
-        return $this;
+        return $column;
     }
 
     public function timestamp(string $name)

@@ -4,7 +4,7 @@ namespace Helpers;
 
 use PDO;
 use PDOException;
-use Config\Database;
+use Helpers\Database;
 use Helpers\DB;
 
 class BaseModel
@@ -39,8 +39,7 @@ class BaseModel
     private function connect()
     {
         try {
-            $database = new Database();
-            $this->connection = $database->getConnection();
+            $this->connection = Database::connection();
             if ($this->connection === null) {
                 throw new \Exception('Database connection failed.');
             }

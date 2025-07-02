@@ -2,7 +2,7 @@
 namespace Helpers;
 
 use Helpers\View;
-use Helpers\SessionMiddleware;
+use Middlewares\SessionMiddleware;
 
 class Route
 {
@@ -10,7 +10,8 @@ class Route
     private static $names = [];
     private static $prefix;
     private static $groupMiddlewares = []; // Menyimpan middleware grup sementara
-
+    private static $lastRouteMethod = null;
+    private static $lastRouteUri = null;
     // Inisialisasi routing dengan prefix
     public static function init($prefix = '')
     {
@@ -22,13 +23,16 @@ class Route
     // Menambahkan rute GET dengan middleware
     public static function get($uri, $handler, $middlewares = [])
     {
-        // Gabungkan middleware grup dengan middleware rute
         $middlewares = array_merge(self::$groupMiddlewares, $middlewares);
         self::$routes['GET'][$uri] = [
             'handler' => $handler,
             'middlewares' => $middlewares,
         ];
-        return new self(); // Untuk chaining (agar bisa pakai name())
+
+        self::$lastRouteMethod = 'GET';
+        self::$lastRouteUri = $uri;
+
+        return new self();
     }
 
     // Menambahkan rute POST dengan middleware
@@ -39,6 +43,8 @@ class Route
             'handler' => $handler,
             'middlewares' => $middlewares,
         ];
+        self::$lastRouteMethod = 'POST';
+        self::$lastRouteUri = $uri;
         return new self();
     }
 
@@ -50,6 +56,8 @@ class Route
             'handler' => $handler,
             'middlewares' => $middlewares,
         ];
+        self::$lastRouteMethod = 'PUT';
+        self::$lastRouteUri = $uri;
         return new self();
     }
 
@@ -61,6 +69,8 @@ class Route
             'handler' => $handler,
             'middlewares' => $middlewares,
         ];
+        self::$lastRouteMethod = 'DELETE';
+        self::$lastRouteUri = $uri;
         return new self();
     }
 
@@ -116,6 +126,26 @@ class Route
         }
 
         self::renderErrorPage("Route dengan nama '{$name}' tidak ditemukan.");
+    }
+
+    public function limit(int $maxRequests)
+    {
+        $method = self::$lastRouteMethod;
+        $uri = self::$lastRouteUri;
+
+        if (!$method || !$uri) {
+            throw new \Exception("No route context available for applying limit().");
+        }
+
+        // Tambahkan middleware limit ke route tersebut
+        $limitMiddleware = function ($request) use ($maxRequests) {
+            $request->setRateLimit($maxRequests);
+            (new \Middlewares\LimitRequests())->handle($request);
+        };
+
+        self::$routes[$method][$uri]['middlewares'][] = $limitMiddleware;
+
+        return $this; // supaya chaining terus
     }
 
     // Dispatch routing
@@ -199,6 +229,7 @@ class Route
 
         } catch (\Throwable $e) {
             ob_start();
+            $error = $e;
             include BPJS_BASE_PATH . '/app/handle/errors/500.php';
             $content = ob_get_clean();
             return new \Bpjs\Core\Response($content, 500);

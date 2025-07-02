@@ -342,7 +342,7 @@ function store($tmpFile, $targetDirectory, $filename)
 if (!function_exists('storage_path')) {
     function storage_path($path = '')
     {
-        return __DIR__ . '/../../public/' . $path;
+        return BPJS_BASE_PATH . '/public/' . $path;
     }
 }
 
@@ -359,7 +359,7 @@ function env($key, $default = null)
     static $env = null;
 
     if ($env === null) {
-        $envFilePath = __DIR__ . '/../../.env';
+        $envFilePath = BPJS_BASE_PATH . '/.env';
         if (file_exists($envFilePath)) {
             $env = parse_ini_file($envFilePath, false, INI_SCANNER_RAW);
             if ($env === false) {
@@ -377,6 +377,35 @@ function env($key, $default = null)
 
     // Ambil nilai berdasarkan key
     return array_key_exists($key, $env) ? $env[$key] : $default;
+}
+
+function config(string $key, $default = null)
+{
+    static $configs = [];
+
+    // Cek apakah key valid, minimal harus ada satu titik
+    if (!str_contains($key, '.')) {
+        return $default;
+    }
+
+    [$file, $path] = explode('.', $key, 2);
+
+    if (!isset($configs[$file])) {
+        $pathToFile = BPJS_BASE_PATH . "/config/{$file}.php";
+        if (!file_exists($pathToFile)) return $default;
+        $configs[$file] = require $pathToFile;
+    }
+
+    $config = $configs[$file];
+
+    foreach (explode('.', $path) as $segment) {
+        if (!is_array($config) || !array_key_exists($segment, $config)) {
+            return $default;
+        }
+        $config = $config[$segment];
+    }
+
+    return $config;
 }
 
 function api_prefix() {

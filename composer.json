@@ -5,7 +5,9 @@
     "require": {
         "php" : "^8.0",
         "firebase/php-jwt": "^6.10",
-        "fadli-dev/wilayah-id": "^1.0"
+        "fadli-dev/wilayah-id": "^1.0",
+        "phpmailer/phpmailer": "^6.9",
+        "phpoffice/phpspreadsheet": "^3.4"
     },
     "license": "MIT",
     "autoload": {
@@ -13,7 +15,8 @@
             "App\\": "app/",
             "Config\\": "config/",
             "Helpers\\": "app/helpers/",
-            "Bpjs\\Core\\":"src/core/"
+            "Bpjs\\Core\\":"src/core/",
+            "Middlewares\\":"app/Middleware/"
         }
     },
     "authors": [

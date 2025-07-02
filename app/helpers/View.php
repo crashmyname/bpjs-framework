@@ -49,11 +49,40 @@ class View
         }
         exit();
     }
+
+    public static function renderToString($view, $data = [], $layout = null): string
+    {
+        extract($data);
+        $viewPath = BPJS_BASE_PATH . '/resources/views/' . $view . '.php';
+
+        if (!file_exists($viewPath)) {
+            throw new \Exception("View file not found: $viewPath");
+        }
+
+        ob_start();
+        include $viewPath;
+        $content = ob_get_clean();
+
+        if ($layout) {
+            $layoutPath = BPJS_BASE_PATH . '/resources/views/' . $layout . '.php';
+            if (!file_exists($layoutPath)) {
+                throw new \Exception("Layout file not found: $layoutPath");
+            }
+
+            // Layouts bisa akses variabel $content
+            ob_start();
+            include $layoutPath;
+            return ob_get_clean();
+        }
+
+        return $content;
+    }
+    
     public static function error($view, $data = [], $layout = null)
     {
         try{
             extract($data);
-            $viewPath = __DIR__ . '/../../app/handle/' . $view . '.php';
+            $viewPath = BPJS_BASE_PATH . '/app/handle/errors/' . $view . '.php';
             if (!file_exists($viewPath)) {
                 throw new \Exception("View file not found: $viewPath");
             }
@@ -62,7 +91,7 @@ class View
             $content = ob_get_clean();
 
             if ($layout) {
-                $layoutPath = __DIR__ . '/../../app/handle/' . $layout . '.php';
+                $layoutPath = BPJS_BASE_PATH . '/app/handle/errors/' . $layout . '.php';
                 if (file_exists($layoutPath)) {
                     include $layoutPath;
                 } else {
@@ -113,7 +142,7 @@ class View
                 'line' => $exception->getLine(),
             ];
             extract($exceptionData);
-            include realpath(__DIR__ . '/../../app/handle/errors/view_404.php');
+            include BPJS_BASE_PATH . '/app/handle/errors/view_404.php';
         }
         exit();
     }
@@ -121,7 +150,7 @@ class View
     public static function path($view, $data = [], $layout = null)
     {
         extract($data);
-        $viewPath = __DIR__ . '/../../src/View/' . $view . '.php';
+        $viewPath = BPJS_BASE_PATH . '/resources/views/' . $view . '.php';
         if (!file_exists($viewPath)) {
             throw new \Exception("View file not found: $viewPath");
         }
@@ -130,7 +159,7 @@ class View
         $content = ob_get_clean();
 
         if ($layout) {
-            $layoutPath = __DIR__ . '/../../src/View/' . $layout . '.php';
+            $layoutPath = BPJS_BASE_PATH . '/resources/views/' . $layout . '.php';
             if (!file_exists($layoutPath)) {
                 throw new \Exception("Layout file not found: $layoutPath");
             }

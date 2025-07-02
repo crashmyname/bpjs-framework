@@ -6,15 +6,14 @@ class CORSMiddleware
     public static function handle()
     {
         
-        $config = require BPJS_BASE_PATH.'/../config/cors.php';
         $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
         $headers = getallheaders();
 
-        if($config['allow_all_origins']){
+        if(config('cors.allow_all_origin')){
             header("Access-Control-Allow-Origin: *");
-        } elseif(in_array($origin,$config['allowed_origins'])){
+        } elseif(in_array($origin,config('cors.allowed_origins'))){
             header("Access-Control-Allow-Origin: $origin");
-             if ($config['allow_credentials']) {
+             if (config('cors.allowed_credentials')) {
                 header("Access-Control-Allow-Credentials: true");
             }
         } else {
@@ -24,13 +23,13 @@ class CORSMiddleware
         }
 
         // Izinkan metode HTTP tertentu
-        header("Access-Control-Allow-Methods: ". implode(',',$config['allowed_methods']));
+        header("Access-Control-Allow-Methods: ". implode(',',config('cors.allowed_methods')));
 
         // Izinkan header tertentu
-        header("Access-Control-Allow-Headers: ". implode(',',$config['allowed_headers']));
+        header("Access-Control-Allow-Headers: ". implode(',',config('cors.allowed_headers')));
 
         // Izinkan penggunaan credentials (seperti cookies)
-        header("Access-Control-Allow-Credentials: ". ($config['allowed_credentials'] ? 'true' : 'false'));
+        header("Access-Control-Allow-Credentials: ". (config('cors.allowed_credentials') ? 'true' : 'false'));
 
         // Untuk permintaan OPTIONS (pre-flight), kirim respons 200 dan hentikan eksekusi skrip
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {

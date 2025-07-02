@@ -1,7 +1,7 @@
 <?php
 namespace Helpers;
 
-use Config\Database;
+use Helpers\Database;
 
 class JobController
 {
@@ -10,7 +10,7 @@ class JobController
     // Inisialisasi koneksi database statis
     public static function init()
     {
-        self::$db = Database::getConnection();
+        self::$db = Database::connection();
     }
 
     // Fungsi statis untuk membuat job baru

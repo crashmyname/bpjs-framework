@@ -58,7 +58,7 @@ class ErrorHandler
     // Menampilkan halaman error dengan informasi tambahan
     public static function renderErrorPage($message, $file, $line, $trace = null)
     {
-        if(env('APP_DEBUG') == true){
+        if(env('APP_DEBUG') == false){
             $data = [
                 'message' => $message,
                 'file' => $file,
