@@ -37,6 +37,15 @@
 <div class="not-found-container">
     <h1>429</h1>
     <h3>Too Many Requests</h3>
+    <?php if (isset($message)): ?>
+    <p class="text-danger"><?= htmlspecialchars($message) ?></p>
+    <?php endif; ?>
+
+    <?php if (isset($limit) && isset($interval)): ?>
+        <p class="text-muted">
+            You are allowed only <strong><?= $limit ?></strong> request<?= $limit > 1 ? 's' : '' ?> every <strong><?= $interval ?></strong> second<?= $interval > 1 ? 's' : '' ?>.
+        </p>
+    <?php endif; ?>
     <p>Sorry! Too Many Requests. Please try again later.</p>
     <a href="<?= base_url()?>" class="btn btn-primary">Go Home</a>
 </div>

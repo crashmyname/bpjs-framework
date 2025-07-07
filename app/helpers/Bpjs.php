@@ -101,7 +101,7 @@ class Bpjs
         }
 
         $isResource = in_array('--resource', $options);
-        $controllerTemplate = "<?php\n\nnamespace {$namespace};\n\nuse Helpers\BaseController;\nuse Helpers\Request;\nuse Helpers\Validator;\nuse Helpers\View;\nuse Helpers\CSRFToken;\n\nclass {$className} extends BaseController\n{\n";
+        $controllerTemplate = "<?php\n\nnamespace {$namespace};\n\nuse Helpers\BaseController;\nuse Bpjs\Core\Request;\nuse Helpers\Validator;\nuse Helpers\View;\nuse Helpers\CSRFToken;\n\nclass {$className} extends BaseController\n{\n";
         if ($isResource) {
             $controllerTemplate .= "    public function index()\n    {\n        // Tampilkan semua resource\n    }\n\n";
             $controllerTemplate .= "    public function show(\$id)\n    {\n        // Tampilkan resource dengan ID: \$id\n    }\n\n";

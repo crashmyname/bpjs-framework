@@ -7,12 +7,13 @@ use PHPMailer\PHPMailer\Exception;
 class Mailer
 {
     protected PHPMailer $mail;
+    protected ?string $lastError = null;
 
     public function __construct()
     {
         $this->mail = new PHPMailer(true);
 
-        // SMTP Config dari .env
+        // Konfigurasi SMTP dari .env
         $this->mail->isSMTP();
         $this->mail->Host       = env('SMTP_HOST');
         $this->mail->SMTPAuth   = env('SMTP_AUTH', true);
@@ -31,9 +32,69 @@ class Mailer
         return new self();
     }
 
+    public function from(string $email, string $name = ''): self
+    {
+        $this->mail->setFrom($email, $name);
+        return $this;
+    }
+
     public function to(string $email, string $name = ''): self
     {
         $this->mail->addAddress($email, $name);
+        return $this;
+    }
+
+    public function cc(string $email, string $name = ''): self
+    {
+        $this->mail->addCC($email, $name);
+        return $this;
+    }
+
+    public function bcc(string $email, string $name = ''): self
+    {
+        $this->mail->addBCC($email, $name);
+        return $this;
+    }
+
+    public function replyTo(string $email, string $name = ''): self
+    {
+        $this->mail->addReplyTo($email, $name);
+        return $this;
+    }
+
+    public function multipleTo(array $emails): self
+    {
+        foreach ($emails as $email => $name) {
+            if (is_int($email)) {
+                $this->to($name);
+            } else {
+                $this->to($email, $name);
+            }
+        }
+        return $this;
+    }
+
+    public function multipleCC(array $emails): self
+    {
+        foreach ($emails as $email => $name) {
+            if (is_int($email)) {
+                $this->cc($name);
+            } else {
+                $this->cc($email, $name);
+            }
+        }
+        return $this;
+    }
+
+    public function multipleBCC(array $emails): self
+    {
+        foreach ($emails as $email => $name) {
+            if (is_int($email)) {
+                $this->bcc($name);
+            } else {
+                $this->bcc($email, $name);
+            }
+        }
         return $this;
     }
 
@@ -49,9 +110,21 @@ class Mailer
         return $this;
     }
 
+    public function altBody(string $text): self
+    {
+        $this->mail->AltBody = $text;
+        return $this;
+    }
+
     public function addAttachment(string $filePath, string $name = ''): self
     {
         $this->mail->addAttachment($filePath, $name);
+        return $this;
+    }
+
+    public function customHeader(string $name, string $value): self
+    {
+        $this->mail->addCustomHeader($name, $value);
         return $this;
     }
 
@@ -60,8 +133,14 @@ class Mailer
         try {
             return $this->mail->send();
         } catch (Exception $e) {
-            error_log("Mailer error: " . $this->mail->ErrorInfo);
+            $this->lastError = $this->mail->ErrorInfo;
+            error_log("Mailer error: " . $this->lastError);
             return false;
         }
+    }
+
+    public function getError(): ?string
+    {
+        return $this->lastError;
     }
 }

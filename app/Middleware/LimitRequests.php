@@ -3,6 +3,7 @@ namespace Middlewares;
 
 use Bpjs\Core\Request;
 use Bpjs\Core\Response;
+use Helpers\View;
 
 class LimitRequests
 {
@@ -32,7 +33,12 @@ class LimitRequests
             if (($currentTime - $data['start_time']) < $interval) {
                 if ($data['count'] >= $limit) {
                     http_response_code(429);
-                    die("⚠️ Too Many Requests. Limit is $limit per $interval seconds.");
+                    View::error('429', [
+                        'message'  => 'You`ve exceeded the allowed number of requests. Try again in a moment.',
+                        'limit'   => $limit,
+                        'interval'=> $interval
+                    ]);
+                    exit();
                 }
 
                 $_SESSION['rate_limit'][$key]['count']++;

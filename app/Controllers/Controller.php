@@ -1,7 +1,11 @@
 <?php
 
 namespace App\Controller;
+use Helpers\BaseController;
 
-class controller {
-    
+class controller extends BaseController{
+    public function index()
+    {
+        
+    }
 }

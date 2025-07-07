@@ -10,6 +10,9 @@ class SessionMiddleware {
             }
             $lifetime = ($config['expire_on_close'] ?? false) ? 0 : ($config['lifetime'] ?? 120) * 60;
 
+            $sessionName = strtoupper(preg_replace('/[^a-zA-Z0-9]/', '_', $config['app_name'] ?? 'bpjs')) . '_SESSID';
+            session_name($sessionName);
+
             // Set save path untuk file session
             if (($config['driver'] ?? 'file') === 'file' && isset($config['storage_path'])) {
                 if (!is_dir($config['storage_path'])) {
