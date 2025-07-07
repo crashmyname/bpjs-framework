@@ -9,20 +9,19 @@
   </head>
   <style>
     .card-img {
-    width: 55%;
-    height: auto; 
-    max-height: 250px; 
-    object-fit: cover; 
-    margin-bottom: 1rem; 
-}
-
+      width: 55%;
+      height: auto; 
+      max-height: 250px; 
+      object-fit: cover; 
+      margin-bottom: 1rem; 
+    }
   </style>
   <body>
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#"><?= $title?></a>
+        <a class="navbar-brand" href="#"><img src="<?= asset('bpjs.png')?>" alt="bpjs" width="6%"> <?= $title?></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
