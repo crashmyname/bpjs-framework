@@ -1,6 +1,7 @@
 <?php
 // Request.php
 namespace Bpjs\Core;
+use Support\Date;
 class Request {
     private $data;
     private $files;
@@ -78,7 +79,26 @@ class Request {
     }
 
     public function file($key) {
-        return $this->files[$key] ?? null;
+        if (!isset($this->files[$key])) {
+            return null;
+        }
+
+        $file = $this->files[$key];
+        $size = isset($file['size']) ? (int) $file['size'] : 0;
+        $sizeKB = $size / 1024;
+        $sizeMB = $sizeKB / 1024;
+
+        $file['original_name'] = $file['name'] ?? '';
+        $file['extension'] = pathinfo($file['name'] ?? '', PATHINFO_EXTENSION);
+        $file['mime_type'] = $file['type'] ?? '';
+        $file['size'] = $size ?? 0;
+        $file['size_kb'] = round($sizeKB,2) ?? 0;
+        $file['size_mb'] = round($sizeMB,2) ?? 0;
+        $file['tmp_path'] = $file['tmp_name'] ?? '';
+        $file['error'] = $file['error'] ?? 0;
+        $file['uploaded_at'] = Date::Now();
+
+        return $file;
     }
 
     public function getClientOriginalExtension($key) {

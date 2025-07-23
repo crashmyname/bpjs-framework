@@ -339,13 +339,24 @@ function store($tmpFile, $targetDirectory, $filename)
     return move_uploaded_file($tmpFile, $targetFile);
 }
 
-if (!function_exists('storage_path')) {
-    function storage_path($path = '')
+if (!function_exists('public_path')) {
+    function public_path($path = '')
     {
         return BPJS_BASE_PATH . '/public/' . $path;
     }
 }
 
+if (!function_exists('storage_path')) {
+    function storage_path($path = '')
+    {
+        return BPJS_BASE_PATH . '/storage/public/' . $path;
+    }
+}
+
+function storage($path = '')
+{
+    return BPJS_BASE_PATH . '/storage/public' . $path;
+}
 
 function createToken()
 {
