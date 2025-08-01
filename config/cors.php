@@ -4,7 +4,7 @@ return [
     'allow_all_origins' => false,
 
     'allowed_origins' => [
-        'http://localhost:8000',
+        true
     ],
 
     'allowed_methods' => [

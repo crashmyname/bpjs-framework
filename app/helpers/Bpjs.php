@@ -7,6 +7,7 @@ class Bpjs
     protected $commands = [
         'make:model' => 'createModel',
         'make:controller' => 'createController',
+        'make:service' => 'createService',
         'make:import' => 'createImport',
         'make:export' => 'createExport',
         'make:migration' => 'createMigration',
@@ -44,6 +45,22 @@ class Bpjs
         } else {
             file_put_contents($filePath, $modelTemplate);
             echo "Model $name berhasil dibuat!\n";
+        }
+    }
+
+    protected function createService($name)
+    {
+        if (!$name) {
+            echo "Nama Service harus diberikan!\n";
+            return;
+        }
+        $serviceTemplate = "<?php\n\nnamespace App\Services;\nuse Helpers\Validator;\n\nclass $name\n{\n    // Service logic here\n}\n";
+        $filePath = "app/Services/{$name}.php";
+        if (file_exists($filePath)) {
+            echo "Service $name sudah ada!\n";
+        } else {
+            file_put_contents($filePath, $serviceTemplate);
+            echo "Service $name berhasil dibuat!\n";
         }
     }
 

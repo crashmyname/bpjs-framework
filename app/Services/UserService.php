@@ -25,7 +25,7 @@ class UserService
     public function login(string $username, string $password): ?User
     {
         $user = User::where('username', $username)->first();
-        if ($user && Hash::check($password, $user->password)) {
+        if ($user && Hash::verify($password, $user->password)) {
             return $user;
         }
 

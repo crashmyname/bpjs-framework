@@ -9,7 +9,7 @@ class CORSMiddleware
         $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
         $headers = getallheaders();
 
-        if(config('cors.allow_all_origin')){
+        if(config('cors.allow_all_origins')){
             header("Access-Control-Allow-Origin: *");
         } elseif(in_array($origin,config('cors.allowed_origins'))){
             header("Access-Control-Allow-Origin: $origin");

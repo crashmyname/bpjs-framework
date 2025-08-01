@@ -6,18 +6,19 @@ use Helpers\Route;
 
 class Kernel
 {
-    protected array $middleware = []; // kamu bisa menambahkan middleware global di sini
-    protected string $dispatcherType = 'web'; // default
+    protected array $middleware = [
+        \Helpers\CorsMiddleware::class,
+    ]; 
+    protected string $dispatcherType = 'web';
 
     public function __construct(protected App $app)
     {
-        // Peta semua route (web atau api) sesuai URL
         $this->mapRoutes();
     }
 
     protected function mapRoutes(): void
     {
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); // hanya path dari URL
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); 
         $appBasePath = app_base_path();
         $cleanUri = preg_replace('#^' . preg_quote($appBasePath, '#') . '#', '', $uri);
         $cleanUri = '/' . ltrim($cleanUri, '/');
@@ -26,11 +27,11 @@ class Kernel
 
         if (str_starts_with($cleanUri, $apiPrefix)) {
             $this->dispatcherType = 'api';
-            Api::init(api_prefix()); // ex: /bpjs-framework/api
+            Api::init(api_prefix()); // contoh: /bpjs-framework/api
             require BPJS_BASE_PATH . '/routes/api.php';
         } else {
             $this->dispatcherType = 'web';
-            Route::init($appBasePath); // ex: /bpjs-framework
+            Route::init($appBasePath); // contoh: /bpjs-framework
             require BPJS_BASE_PATH . '/routes/web.php';
         }
     }
