@@ -68,6 +68,67 @@ class Date{
         return date('Y-m-d 23:59:59',self::zone());
     }
 
+    public function startOfMonth()
+    {
+        self::zone();
+        return date('Y-m-01 00:00:00', $this->time);
+    }
+
+    public function endOfMonth()
+    {
+        self::zone();
+        return date('Y-m-t 23:59:59', $this->time);
+    }
+
+    public function toDate()
+    {
+        self::zone();
+        return date('Y-m-d',$this->time);
+    }
+
+    public function toTime()
+    {
+        self::zone();
+        return date('H:i:s',$this->time);
+    }
+
+    public function isToday() {
+        return date('Y-m-d', $this->time) === date('Y-m-d');
+    }
+
+    public static function DayNow()
+    {
+        setTime();
+        $date = date('l');
+        return $date;
+    }
+
+    public static function DayName($dateInput = null)
+    {
+        self::zone();
+        $timestamp = $dateInput ? strtotime($dateInput) : time();
+        $dayName = date('l', $timestamp);
+        $days = [
+            'Sunday' => 'Minggu',
+            'Monday' => 'Senin',
+            'Tuesday' => 'Selasa',
+            'Wednesday' => 'Rabu',
+            'Thursday' => 'Kamis',
+            'Friday' => 'Jumat',
+            'Saturday' => 'Sabtu',
+        ];
+
+        return $days[$dayName] ?? $dayName;
+    }
+
+    public function isPast() {
+        return $this->time < time();
+    }
+
+    public function isFuture() {
+        return $this->time > time();
+    }
+
     public static function isValidDateRange($date, $daysBefore = 14, $daysAfter = 14)
     {
         self::zone();
