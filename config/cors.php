@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'allow_all_origins' => false,
+    'allow_all_origins' => true,
 
     'allowed_origins' => [
         true
