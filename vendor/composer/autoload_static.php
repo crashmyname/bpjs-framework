@@ -67,8 +67,8 @@ class ComposerStaticInit58a439baa63ce317551a65cb5db0a5b6
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -112,7 +112,7 @@ class ComposerStaticInit58a439baa63ce317551a65cb5db0a5b6
         ),
         'Bpjs\\Core\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src/core',
+            0 => __DIR__ . '/../..' . '/src/Core',
         ),
         'App\\' => 
         array (
