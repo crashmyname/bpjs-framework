@@ -333,10 +333,18 @@ function storeFile($file, $targetDirectory)
     }
 }
 
-function store($tmpFile, $targetDirectory, $filename)
+function store($file, $targetDirectory, $filename)
 {
-    $targetFile = rtrim($targetDirectory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $filename;
-    return move_uploaded_file($tmpFile, $targetFile);
+    if (is_array($file) && isset($file['tmp_name'])) {
+        $file = $file['tmp_name'];
+    }
+
+    if (!is_dir($targetDirectory)) {
+        mkdir($targetDirectory, 0777, true);
+    }
+
+    $targetFile = $targetDirectory . DIRECTORY_SEPARATOR . $filename;
+    return move_uploaded_file($file, $targetFile);
 }
 
 if (!function_exists('public_path')) {
@@ -349,13 +357,75 @@ if (!function_exists('public_path')) {
 if (!function_exists('storage_path')) {
     function storage_path($path = '')
     {
-        return BPJS_BASE_PATH . '/storage/public/' . $path;
+        return rtrim(BPJS_BASE_PATH . '/storage/public/' . ltrim($path, '/'), DIRECTORY_SEPARATOR);
     }
 }
 
-function storage($path = '')
+function storage($path)
 {
-    return BPJS_BASE_PATH . '/storage/public' . $path;
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+
+    $documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? null;
+    $physicalBasePath = BPJS_BASE_PATH;
+
+    if ($documentRoot) {
+        $documentRoot = realpath($documentRoot);
+        $relativePath = str_replace('\\', '/', str_replace($documentRoot, '', $physicalBasePath));
+        $relativePath = '/' . trim($relativePath, '/');
+    } else {
+        $relativePath = '/' . trim(basename($physicalBasePath), '/');
+    }
+    if ($relativePath === '/') {
+        $relativePath = '';
+    }
+
+    return $protocol . $host . $relativePath . '/storage/public/'.ltrim($path,'/');
+}
+
+function storage_secure(string $filename, int $ttlSeconds = 3600): string
+{
+    $payload = json_encode([
+        'f' => $filename,
+        'exp' => time() + $ttlSeconds
+    ]);
+
+    $token = \Helpers\Crypto::encrypt($payload);
+
+    return base_url() . 'file/secure?token=' . urlencode($token);
+}
+
+function serve_secure_file()
+{
+    $token = $_GET['token'] ?? null;
+
+    if (!$token) {
+        return new \Bpjs\Core\Response('Missing token', 400);
+    }
+
+    $decoded = \Helpers\Crypto::decrypt($token);
+    if (!$decoded) {
+        return new \Bpjs\Core\Response('Invalid token', 403);
+    }
+
+    $data = json_decode($decoded, true);
+    if (!$data || !isset($data['f'], $data['exp'])) {
+        return new \Bpjs\Core\Response('Invalid token data', 403);
+    }
+
+    if (time() > $data['exp']) {
+        return new \Bpjs\Core\Response('Token expired', 403);
+    }
+
+    $filepath = storage_path($data['f']);
+    if (!file_exists($filepath)) {
+        return new \Bpjs\Core\Response('File not found', 404);
+    }
+
+    header('Content-Type: ' . mime_content_type($filepath));
+    header('Content-Length: ' . filesize($filepath));
+    readfile($filepath);
+    exit;
 }
 
 function createToken()

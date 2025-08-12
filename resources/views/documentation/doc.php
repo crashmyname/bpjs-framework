@@ -56,7 +56,7 @@
             <li class="dropdown <?= $title == "Old Model" || $title == "New Model" ? "active" : ""?>">
               <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-columns"></i> <span>Model</span></a>
               <ul class="dropdown-menu">
-                <li class="<?= $title == "Old Model" ? "active" : ""?>"><a class="nav-link" href="<?= route('old-model') ?>">Old Model</a></li>
+                <!-- <li class="<?= $title == "Old Model" ? "active" : ""?>"><a class="nav-link" href="<?= route('old-model') ?>">Old Model</a></li> -->
                 <li class="<?= $title == "New Model" ? "active" : ""?>"><a class="nav-link" href="<?= route('new-model')?>">New Model</a></li>
               </ul>
             </li>
@@ -66,6 +66,7 @@
               <ul class="dropdown-menu">
                 <li class="<?= $title == "Asset" ? "active" : ""?>"><a class="nav-link" href="<?= route('asset')?>">Asset</a></li>
                 <li class="<?= $title == "Auth" ? "active" : ""?>"><a class="nav-link" href="<?= route('auth')?>">AuthMiddleware</a></li>
+                <li class="<?= $title == "Char" ? "active" : ""?>"><a class="nav-link" href="<?= route('char')?>">Char</a></li>
                 <li class="<?= $title == "Cors" ? "active" : ""?>"><a class="nav-link" href="<?= route('cors')?>">Cors</a></li>
                 <li class="<?= $title == "Crypto" ? "active" : ""?>"><a class="nav-link" href="<?= route('crypto')?>">Crypto</a></li>
                 <li class="<?= $title == "CSRF" ? "active" : ""?>"><a class="nav-link" href="<?= route('csrf')?>">Csrf</a></li>
@@ -76,7 +77,7 @@
                 <li class="<?= $title == "Rate Limiter" ? "active" : ""?>"><a class="nav-link" href="<?= route('ratelimiter')?>">Rate Limiter</a></li>
                 <li class="<?= $title == "Request" ? "active" : ""?>"><a class="nav-link" href="<?= route('request')?>">Request</a></li>
                 <li class="<?= $title == "Response" ? "active" : ""?>"><a class="nav-link" href="<?= route('response')?>">Response</a></li>
-                <li class="<?= $title == "Char" ? "active" : ""?>"><a class="nav-link" href="<?= route('char')?>">Char</a></li>
+                <li class="<?= $title == "Store" ? "active" : ""?>"><a class="nav-link" href="<?= route('store')?>">Store</a></li>
                 <li class="<?= $title == "Validator" ? "active" : ""?>"><a class="nav-link" href="<?= route('validator')?>">Validator</a></li>
               </ul>
             </li>

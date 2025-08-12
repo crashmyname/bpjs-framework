@@ -99,3 +99,7 @@ Route::get('/dokumentasi/support/validator', function(){
     $title = "Validator";
     View::render('documentation/support/validator',['title'=>$title],'documentation/doc');
 })->name('validator');
+Route::get('/dokumentasi/support/store', function(){
+    $title = "Store";
+    View::render('documentation/support/store',['title'=>$title],'documentation/doc');
+})->name('store');

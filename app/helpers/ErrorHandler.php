@@ -47,12 +47,19 @@ class ErrorHandler
     // Fungsi untuk log error ke file/log system
     public static function logError($message, $file, $line, $trace = null)
     {
+        $logDir = BPJS_BASE_PATH . '/logs';
+        $logFile = $logDir . '/error.log';
+
+        if (!is_dir($logDir)) {
+            mkdir($logDir, 0777, true);
+        }
+
         // Simpan log ke file atau monitoring system
         $log = "[Error] $message in $file at line $line";
         if ($trace) {
             $log .= "\nTrace: $trace";
         }
-        file_put_contents(BPJS_BASE_PATH . '/logs/error.log', $log . "\n", FILE_APPEND);
+        file_put_contents($logFile, $log . "\n", FILE_APPEND);
     }
 
     // Menampilkan halaman error dengan informasi tambahan

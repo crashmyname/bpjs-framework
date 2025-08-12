@@ -13,7 +13,7 @@
         echo '<br>';
         echo '
 namespace Model; <-- panggil namespace model nya
-use Support\BaseModel; <-- panggil basemodelnya dan extend basemodel dengan model kamu
+use Helpers\BaseModel; <-- panggil basemodelnya dan extend basemodel dengan model kamu
 
 class User extends BaseModel
 {

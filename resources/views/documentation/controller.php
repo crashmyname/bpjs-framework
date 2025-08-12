@@ -13,7 +13,7 @@
     echo htmlentities('<?php');
     echo '<br>namespace Controller;
 
-use Helpers\Request;
+use Bpjs\Core\Request;
 use Helpers\View;
 use Helpers\CSRFToken;
 use Helpers\Response;
@@ -36,7 +36,7 @@ class yourController extends BaseController
         echo '
 namespace Controller;
 
-use Helpers\Request; <-- panggil fungsi request untuk menggantikan metode $_POST atau $_GET
+use Bpjs\Core\Request; <-- panggil fungsi request untuk menggantikan metode $_POST atau $_GET
 use Helpers\View; <-- panggil fungsi View untuk melakukan return ke halaman tertentu ataupun melakukan redirect
 use Helpers\CSRFToken; <-- panggil fungsi CSRFToken supaya aman ajah udah sih gituh doang
 use Helpers\Response; <-- panggil fungsi response ini optional jika ingin melakuka return json dan lebih mudah
