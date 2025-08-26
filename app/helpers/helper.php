@@ -400,21 +400,21 @@ function serve_secure_file()
     $token = $_GET['token'] ?? null;
 
     if (!$token) {
-        return new \Bpjs\Core\Response('Missing token', 400);
+        return \Helpers\Response::json(['status'=>400,'message'=>'Missing token'], 400);
     }
 
     $decoded = \Helpers\Crypto::decrypt($token);
     if (!$decoded) {
-        return new \Bpjs\Core\Response('Invalid token', 403);
+        return \Helpers\Response::json(['status'=>403,'message'=>'Invalid token'], 403);
     }
 
     $data = json_decode($decoded, true);
     if (!$data || !isset($data['f'], $data['exp'])) {
-        return new \Bpjs\Core\Response('Invalid token data', 403);
+        return \Helpers\Response::json(['status'=>403,'message'=>'Invalid token data'], 403);
     }
 
     if (time() > $data['exp']) {
-        return new \Bpjs\Core\Response('Token expired', 403);
+        return \Helpers\Response::json(['status'=>403,'message'=>'Token expired'], 403);
     }
 
     $filepath = storage_path($data['f']);

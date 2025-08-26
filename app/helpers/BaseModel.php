@@ -427,6 +427,102 @@ class BaseModel
         }
     }
 
+    public function paginate($perPage = 10, $fetchStyle = PDO::FETCH_OBJ)
+    {
+        try {
+            $table = self::$dynamicTable ?? $this->table;
+
+            // Ambil current page dari query string (?page=...), default 1
+            $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+            if ($currentPage < 1) {
+                $currentPage = 1;
+            }
+
+            // Build query dasar (tanpa limit & offset)
+            $sql = "SELECT {$this->distinct} " . implode(', ', $this->selectColumns) . " FROM {$table}";
+
+            if (!empty($this->joins)) {
+                $sql .= ' ' . implode(' ', $this->joins);
+            }
+
+            $whereClause = '';
+            if (!empty($this->whereConditions) || !empty($this->orWhereConditions)) {
+                $whereClause .= ' WHERE ';
+                $conditions = [];
+
+                if (!empty($this->whereConditions)) {
+                    $conditions[] = '(' . implode(' AND ', $this->whereConditions) . ')';
+                }
+
+                if (!empty($this->orWhereConditions)) {
+                    $conditions[] = '(' . implode(' OR ', $this->orWhereConditions) . ')';
+                }
+
+                $whereClause .= implode(' AND ', $conditions);
+                $sql .= $whereClause;
+            }
+
+            if (!empty($this->groupBy)) {
+                $sql .= ' GROUP BY ' . $this->groupBy;
+            }
+
+            if (!empty($this->orderBy)) {
+                $sql .= ' ORDER BY ' . implode(', ', $this->orderBy);
+            }
+
+            // ==== HITUNG TOTAL DATA ====
+            $countSql = "SELECT COUNT(*) as total FROM {$table}";
+            if (!empty($whereClause)) {
+                $countSql .= " " . $whereClause;
+            }
+            $stmtCount = $this->connection->prepare($countSql);
+            foreach ($this->whereParams as $key => $value) {
+                $stmtCount->bindValue($key, $value);
+            }
+            $stmtCount->execute();
+            $total = (int) $stmtCount->fetchColumn();
+
+            // ==== HITUNG PAGINATION ====
+            $lastPage = max(1, (int) ceil($total / $perPage));
+            $currentPage = max(1, min($currentPage, $lastPage));
+            $offset = ($currentPage - 1) * $perPage;
+
+            // ==== QUERY DATA PAGINATED ====
+            $sql .= " LIMIT {$perPage} OFFSET {$offset}";
+            $stmt = $this->connection->prepare($sql);
+            foreach ($this->whereParams as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+            $stmt->execute();
+            $data = $stmt->fetchAll($fetchStyle);
+
+            return [
+                "data" => $data,
+                "pagination" => [
+                    "total"        => $total,
+                    "per_page"     => $perPage,
+                    "current_page" => $currentPage,
+                    "last_page"    => $lastPage,
+                    "from"         => $offset + 1,
+                    "to"           => $offset + count($data),
+                ]
+            ];
+        } catch (\Exception $e) {
+            ErrorHandler::handleException($e);
+            return [
+                "data" => [],
+                "pagination" => [
+                    "total" => 0,
+                    "per_page" => $perPage,
+                    "current_page" => 1,
+                    "last_page" => 1,
+                    "from" => null,
+                    "to" => null,
+                ]
+            ];
+        }
+    }
+
     public function count()
     {
         try {
