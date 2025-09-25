@@ -1,6 +1,7 @@
 <?php
 
 namespace Helpers;
+use Bpjs\Core\Request;
 use Helpers\View;
 use ReflectionClass;
 
@@ -454,6 +455,18 @@ class BaseController {
             extract($data);
             $viewPath = BPJS_BASE_PATH . '/resources/views/' . $view . '.php';
             if (!file_exists($viewPath)) {
+                if (env('APP_DEBUG') == 'false') {
+                    if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                        header('Content-Type: application/json', true, 500);
+                        echo json_encode([
+                            'statusCode' => 500,
+                            'error'      => 'Internal Server Error'
+                        ]);
+                    } else {
+                        return View::error(500);
+                    }
+                    exit;
+                }
                 throw new \Exception("View file not found: $viewPath");
             }
             ob_start();
@@ -465,6 +478,18 @@ class BaseController {
                 if (file_exists($layoutPath)) {
                     include $layoutPath;
                 } else {
+                    if (env('APP_DEBUG') == 'false') {
+                        if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                            header('Content-Type: application/json', true, 500);
+                            echo json_encode([
+                                'statusCode' => 500,
+                                'error'      => 'Internal Server Error'
+                            ]);
+                        } else {
+                            return View::error(500);
+                        }
+                        exit;
+                    }
                     throw new \Exception("Layout file not found: $layoutPath");
                 }
             } else {
@@ -473,6 +498,18 @@ class BaseController {
         } catch (\Exception $e){
             if (!headers_sent()) { 
                 http_response_code(500);
+            }
+            if (env('APP_DEBUG') == 'false') {
+                if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                    header('Content-Type: application/json', true, 500);
+                    echo json_encode([
+                        'statusCode' => 500,
+                        'error'      => 'Internal Server Error'
+                    ]);
+                } else {
+                    return View::error(500);
+                }
+                exit;
             }
             // View::renderError($e);
             ErrorHandler::handleException($e);

@@ -1,6 +1,7 @@
 <?php
 namespace Helpers;
 
+use Bpjs\Core\Request;
 use Helpers\View;
 use Middlewares\SessionMiddleware;
 
@@ -101,7 +102,18 @@ class Route
                 return new self(); // Kembali ke chaining
             }
         }
-
+        if (env('APP_DEBUG') == 'false') {
+            if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                header('Content-Type: application/json', true, 500);
+                echo json_encode([
+                    'statusCode' => 500,
+                    'error'      => 'Internal Server Error'
+                ]);
+            } else {
+                return View::error(500);
+            }
+            exit;
+        }
         // throw new \Exception("No routes found for naming '{$name}'");
         ErrorHandler::handleException($name);
     }
@@ -124,7 +136,18 @@ class Route
 
             return self::$prefix . '/' . trim($uri, '/');
         }
-
+        if (env('APP_DEBUG') == 'false') {
+            if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                header('Content-Type: application/json', true, 500);
+                echo json_encode([
+                    'statusCode' => 500,
+                    'error'      => 'Internal Server Error'
+                ]);
+            } else {
+                return View::error(500);
+            }
+            exit;
+        }
         self::renderErrorPage("Route dengan nama '{$name}' tidak ditemukan.");
     }
 
@@ -228,6 +251,18 @@ class Route
             return new \Bpjs\Core\Response($content, 404);
 
         } catch (\Throwable $e) {
+            if (env('APP_DEBUG') == 'false') {
+                if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                    header('Content-Type: application/json', true, 500);
+                    echo json_encode([
+                        'statusCode' => 500,
+                        'error'      => 'Internal Server Error'
+                    ]);
+                } else {
+                    return View::error(500);
+                }
+                exit;
+            }
             ob_start();
             $error = $e;
             include BPJS_BASE_PATH . '/app/handle/errors/500.php';

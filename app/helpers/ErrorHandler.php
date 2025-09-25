@@ -65,7 +65,7 @@ class ErrorHandler
     // Menampilkan halaman error dengan informasi tambahan
     public static function renderErrorPage($message, $file, $line, $trace = null)
     {
-        if(env('APP_DEBUG') == false){
+        if(env('APP_DEBUG') == 'true'){
             $data = [
                 'message' => $message,
                 'file' => $file,
@@ -76,7 +76,7 @@ class ErrorHandler
             include BPJS_BASE_PATH . '/app/handle/errors/page_error.php';
             exit();
         } else {
-            View::error('500');
+            return View::error(500);
         }
     }
 

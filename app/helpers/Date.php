@@ -139,4 +139,23 @@ class Date{
 
         return ($date >= $minDate && $date <= $maxDate);
     }
+
+    public static function createFromFormat($format, $value)
+    {
+        self::zone();
+        $dt = \DateTime::createFromFormat($format, $value);
+
+        if (!$dt) {
+            return false;
+        }
+
+        if ($dt->format($format) !== $value) {
+            return false;
+        }
+
+        $instance = new self();
+        $instance->time = $dt->getTimestamp();
+        return $instance;
+    }
+
 }

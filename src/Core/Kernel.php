@@ -3,6 +3,7 @@
 namespace Bpjs\Core;
 use Helpers\Api;
 use Helpers\Route;
+use Helpers\View;
 
 class Kernel
 {
@@ -27,11 +28,11 @@ class Kernel
 
         if (str_starts_with($cleanUri, $apiPrefix)) {
             $this->dispatcherType = 'api';
-            Api::init(api_prefix()); // contoh: /bpjs-framework/api
+            Api::init(api_prefix());
             require BPJS_BASE_PATH . '/routes/api.php';
         } else {
             $this->dispatcherType = 'web';
-            Route::init($appBasePath); // contoh: /bpjs-framework
+            Route::init($appBasePath);
             require BPJS_BASE_PATH . '/routes/web.php';
         }
     }
@@ -41,7 +42,6 @@ class Kernel
         foreach ($this->middleware as $middleware) {
             (new $middleware())->handle($request);
         }
-
         return match ($this->dispatcherType) {
             'web' => Route::dispatch(),
             'api' => Api::dispatch(),

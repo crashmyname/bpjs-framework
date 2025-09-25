@@ -2,6 +2,7 @@
 
 namespace Helpers;
 
+use Bpjs\Core\Request;
 use PDO;
 use PDOException;
 use Helpers\Database;
@@ -41,9 +42,33 @@ class BaseModel
         try {
             $this->connection = Database::connection();
             if ($this->connection === null) {
+                if (env('APP_DEBUG') == 'false') {
+                    if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                        header('Content-Type: application/json', true, 500);
+                        echo json_encode([
+                            'statusCode' => 500,
+                            'error'      => 'Internal Server Error'
+                        ]);
+                    } else {
+                        return View::error(500);
+                    }
+                    exit;
+                }
                 throw new \Exception('Database connection failed.');
             }
         } catch (\Exception $e) {
+            if (env('APP_DEBUG') == 'false') {
+                if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                    header('Content-Type: application/json', true, 500);
+                    echo json_encode([
+                        'statusCode' => 500,
+                        'error'      => 'Internal Server Error'
+                    ]);
+                } else {
+                    return View::error(500);
+                }
+                exit;
+            }
             ErrorHandler::handleException($e);
             die();
         }
@@ -138,6 +163,18 @@ class BaseModel
     public function whereIn($column, array $values)
     {
         if (empty($values)) {
+            if (env('APP_DEBUG') == 'false') {
+                if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                    header('Content-Type: application/json', true, 500);
+                    echo json_encode([
+                        'statusCode' => 500,
+                        'error'      => 'Internal Server Error'
+                    ]);
+                } else {
+                    return View::error(500);
+                }
+                exit;
+            }
             throw new \InvalidArgumentException('The values array cannot be empty for whereIn condition.');
         }
 
@@ -238,6 +275,18 @@ class BaseModel
         if (in_array(strtoupper($type), $validJoinTypes)) {
             $this->joins[] = "{$type} JOIN {$table} ON {$first} {$operator} {$second}";
         } else {
+            if (env('APP_DEBUG') == 'false') {
+                if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                    header('Content-Type: application/json', true, 500);
+                    echo json_encode([
+                        'statusCode' => 500,
+                        'error'      => 'Internal Server Error'
+                    ]);
+                } else {
+                    return View::error(500);
+                }
+                exit;
+            }
             throw new \InvalidArgumentException("Invalid join type: {$type}");
         }
 
@@ -319,6 +368,18 @@ class BaseModel
             $stmt->execute();
             return $stmt->fetchAll($fetchStyle);
         } catch (\Exception $e) {
+            if (env('APP_DEBUG') == 'false') {
+                if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                    header('Content-Type: application/json', true, 500);
+                    echo json_encode([
+                        'statusCode' => 500,
+                        'error'      => 'Internal Server Error'
+                    ]);
+                } else {
+                    return View::error(500);
+                }
+                exit;
+            }
             ErrorHandler::handleException($e);
             return [];
         }
@@ -356,6 +417,18 @@ class BaseModel
 
             return $sql;
         } catch (\Exception $e) {
+            if (env('APP_DEBUG') == 'false') {
+                if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                    header('Content-Type: application/json', true, 500);
+                    echo json_encode([
+                        'statusCode' => 500,
+                        'error'      => 'Internal Server Error'
+                    ]);
+                } else {
+                    return View::error(500);
+                }
+                exit;
+            }
             ErrorHandler::handleException($e);
         }
     }
@@ -382,6 +455,18 @@ class BaseModel
 
             return $sql;
         } catch (\Exception $e) {
+            if (env('APP_DEBUG') == 'false') {
+                if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                    header('Content-Type: application/json', true, 500);
+                    echo json_encode([
+                        'statusCode' => 500,
+                        'error'      => 'Internal Server Error'
+                    ]);
+                } else {
+                    return View::error(500);
+                }
+                exit;
+            }
             ErrorHandler::handleException($e);
         }
     }
@@ -422,104 +507,20 @@ class BaseModel
             $data = $stmt->fetchAll($fetchStyle);
             return $data;
         } catch (\Exception $e) {
+            if (env('APP_DEBUG') == 'false') {
+                if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                    header('Content-Type: application/json', true, 500);
+                    echo json_encode([
+                        'statusCode' => 500,
+                        'error'      => 'Internal Server Error'
+                    ]);
+                } else {
+                    return View::error(500);
+                }
+                exit;
+            }
             ErrorHandler::handleException($e);
             return [];
-        }
-    }
-
-    public function paginate($perPage = 10, $fetchStyle = PDO::FETCH_OBJ)
-    {
-        try {
-            $table = self::$dynamicTable ?? $this->table;
-
-            // Ambil current page dari query string (?page=...), default 1
-            $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-            if ($currentPage < 1) {
-                $currentPage = 1;
-            }
-
-            // Build query dasar (tanpa limit & offset)
-            $sql = "SELECT {$this->distinct} " . implode(', ', $this->selectColumns) . " FROM {$table}";
-
-            if (!empty($this->joins)) {
-                $sql .= ' ' . implode(' ', $this->joins);
-            }
-
-            $whereClause = '';
-            if (!empty($this->whereConditions) || !empty($this->orWhereConditions)) {
-                $whereClause .= ' WHERE ';
-                $conditions = [];
-
-                if (!empty($this->whereConditions)) {
-                    $conditions[] = '(' . implode(' AND ', $this->whereConditions) . ')';
-                }
-
-                if (!empty($this->orWhereConditions)) {
-                    $conditions[] = '(' . implode(' OR ', $this->orWhereConditions) . ')';
-                }
-
-                $whereClause .= implode(' AND ', $conditions);
-                $sql .= $whereClause;
-            }
-
-            if (!empty($this->groupBy)) {
-                $sql .= ' GROUP BY ' . $this->groupBy;
-            }
-
-            if (!empty($this->orderBy)) {
-                $sql .= ' ORDER BY ' . implode(', ', $this->orderBy);
-            }
-
-            // ==== HITUNG TOTAL DATA ====
-            $countSql = "SELECT COUNT(*) as total FROM {$table}";
-            if (!empty($whereClause)) {
-                $countSql .= " " . $whereClause;
-            }
-            $stmtCount = $this->connection->prepare($countSql);
-            foreach ($this->whereParams as $key => $value) {
-                $stmtCount->bindValue($key, $value);
-            }
-            $stmtCount->execute();
-            $total = (int) $stmtCount->fetchColumn();
-
-            // ==== HITUNG PAGINATION ====
-            $lastPage = max(1, (int) ceil($total / $perPage));
-            $currentPage = max(1, min($currentPage, $lastPage));
-            $offset = ($currentPage - 1) * $perPage;
-
-            // ==== QUERY DATA PAGINATED ====
-            $sql .= " LIMIT {$perPage} OFFSET {$offset}";
-            $stmt = $this->connection->prepare($sql);
-            foreach ($this->whereParams as $key => $value) {
-                $stmt->bindValue($key, $value);
-            }
-            $stmt->execute();
-            $data = $stmt->fetchAll($fetchStyle);
-
-            return [
-                "data" => $data,
-                "pagination" => [
-                    "total"        => $total,
-                    "per_page"     => $perPage,
-                    "current_page" => $currentPage,
-                    "last_page"    => $lastPage,
-                    "from"         => $offset + 1,
-                    "to"           => $offset + count($data),
-                ]
-            ];
-        } catch (\Exception $e) {
-            ErrorHandler::handleException($e);
-            return [
-                "data" => [],
-                "pagination" => [
-                    "total" => 0,
-                    "per_page" => $perPage,
-                    "current_page" => 1,
-                    "last_page" => 1,
-                    "from" => null,
-                    "to" => null,
-                ]
-            ];
         }
     }
 
@@ -562,6 +563,18 @@ class BaseModel
 
             return $result['count'];
         } catch (\Exception $e) {
+            if (env('APP_DEBUG') == 'false') {
+                if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                    header('Content-Type: application/json', true, 500);
+                    echo json_encode([
+                        'statusCode' => 500,
+                        'error'      => 'Internal Server Error'
+                    ]);
+                } else {
+                    return View::error(500);
+                }
+                exit;
+            }
             ErrorHandler::handleException($e);
             return 0;
         }
@@ -581,6 +594,18 @@ class BaseModel
             $instance->save();
             return $instance;
         } catch (\Exception $e) {
+            if (env('APP_DEBUG') == 'false') {
+                if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                    header('Content-Type: application/json', true, 500);
+                    echo json_encode([
+                        'statusCode' => 500,
+                        'error'      => 'Internal Server Error'
+                    ]);
+                } else {
+                    return View::error(500);
+                }
+                exit;
+            }
             ErrorHandler::handleException($e);
             return null;
         }
@@ -618,6 +643,18 @@ class BaseModel
                 $this->attributes[$this->primaryKey] = $this->connection->lastInsertId();
             }
         } catch (\Exception $e) {
+            if (env('APP_DEBUG') == 'false') {
+                if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                    header('Content-Type: application/json', true, 500);
+                    echo json_encode([
+                        'statusCode' => 500,
+                        'error'      => 'Internal Server Error'
+                    ]);
+                } else {
+                    return View::error(500);
+                }
+                exit;
+            }
             ErrorHandler::handleException($e); // Menangani error
         }
     }
@@ -644,6 +681,18 @@ class BaseModel
 
             $stmt->execute();
         } catch (\Exception $e) {
+            if (env('APP_DEBUG') == 'false') {
+                if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                    header('Content-Type: application/json', true, 500);
+                    echo json_encode([
+                        'statusCode' => 500,
+                        'error'      => 'Internal Server Error'
+                    ]);
+                } else {
+                    return View::error(500);
+                }
+                exit;
+            }
             ErrorHandler::handleException($e);
         }
     }
@@ -684,6 +733,18 @@ class BaseModel
             $stmt->bindValue(':' . $this->primaryKey, $this->attributes[$this->primaryKey]);
             $stmt->execute();
         } catch (\Exception $e) {
+            if (env('APP_DEBUG') == 'false') {
+                if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
+                    header('Content-Type: application/json', true, 500);
+                    echo json_encode([
+                        'statusCode' => 500,
+                        'error'      => 'Internal Server Error'
+                    ]);
+                } else {
+                    return View::error(500);
+                }
+                exit;
+            }
             ErrorHandler::handleException($e);
         }
     }
