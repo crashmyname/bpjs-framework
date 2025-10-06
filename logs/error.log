@@ -1,0 +1,16 @@
+[2025-10-06 12:28:11] [Error] syntax error, unexpected identifier "BPJS", expecting ")" in C:\laragon\www\bpjs\routes\web.php on line 7
+Trace: #0 C:\laragon\www\bpjs\src\Core\Kernel.php(17): Bpjs\Core\Kernel->mapRoutes()
+#1 C:\laragon\www\bpjs\bootstrap\app.php(9): Bpjs\Core\Kernel->__construct(Object(Bpjs\Core\App))
+#2 C:\laragon\www\bpjs\src\Core\App.php(13): {closure}(Object(Bpjs\Core\App))
+#3 C:\laragon\www\bpjs\bootstrap\app.php(8): Bpjs\Core\App->singleton('Bpjs\\Core\\Kerne...', Object(Closure))
+#4 C:\laragon\www\bpjs\index.php(28): require('C:\\laragon\\www\\...')
+#5 {main}
+-------------------------------------------
+[2025-10-06 12:28:26] [Error] syntax error, unexpected token "function", expecting ")" in C:\laragon\www\bpjs\routes\web.php on line 6
+Trace: #0 C:\laragon\www\bpjs\src\Core\Kernel.php(17): Bpjs\Core\Kernel->mapRoutes()
+#1 C:\laragon\www\bpjs\bootstrap\app.php(9): Bpjs\Core\Kernel->__construct(Object(Bpjs\Core\App))
+#2 C:\laragon\www\bpjs\src\Core\App.php(13): {closure}(Object(Bpjs\Core\App))
+#3 C:\laragon\www\bpjs\bootstrap\app.php(8): Bpjs\Core\App->singleton('Bpjs\\Core\\Kerne...', Object(Closure))
+#4 C:\laragon\www\bpjs\index.php(28): require('C:\\laragon\\www\\...')
+#5 {main}
+-------------------------------------------
