@@ -19,13 +19,13 @@ define('BPJS_BASE_PATH',$baseDir);
 // ---------------------------------------------------------------
 //  Register The Composer Autoloader
 // ---------------------------------------------------------------
-require $baseDir . '/vendor/autoload.php';
+require BPJS_BASE_PATH . '/vendor/autoload.php';
 
 ErrorHandler::register();
 // ---------------------------------------------------------------
 //  Bootstrap The Application
 // ---------------------------------------------------------------
-$app = require $baseDir . '/bootstrap/app.php';
+$app = require BPJS_BASE_PATH . '/bootstrap/app.php';
 
 // ---------------------------------------------------------------
 //  Handle The Incoming Request
