@@ -29,7 +29,7 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="bg-light text-center py-4">
+    <section class="bg-light text-center py-2">
       <div class="container">
         <h1 class="display-4">Welcome to <a href="<?= base_url() ?>"><?= $title?></a></h1>
         <p class="lead">A simple and elegant framework to kickstart your PHP projects.</p>
@@ -72,7 +72,7 @@
     <hr>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-4 fixed-bottom">
+    <footer class="bg-dark text-white text-center py-2 fixed-bottom">
       <div class="container">
         <p>&copy; 2024 <?= $title?>. All rights reserved.</p>
         <a href="#" class="text-white">Privacy Policy</a> |
