@@ -112,6 +112,71 @@ class SchemaBuilder
         return $column;
     }
 
+    public function enum(string $name, array $values)
+    {
+        $escaped = array_map(fn($v) => "'$v'", $values);
+        $column = new ColumnDefinition("ENUM(" . implode(',', $escaped) . ")", $name);
+        $this->columns[] = $column;
+        return $column;
+    }
+
+    public function set(string $name, array $values)
+    {
+        $escaped = array_map(fn($v) => "'$v'", $values);
+        $column = new ColumnDefinition("SET(" . implode(',', $escaped) . ")", $name);
+        $this->columns[] = $column;
+        return $column;
+    }
+
+    public function json(string $name)
+    {
+        $column = new ColumnDefinition("JSON", $name);
+        $this->columns[] = $column;
+        return $column;
+    }
+
+    public function blob(string $name)
+    {
+        $column = new ColumnDefinition("BLOB", $name);
+        $this->columns[] = $column;
+        return $column;
+    }
+
+    public function binary(string $name, int $length = 255)
+    {
+        $column = new ColumnDefinition("BINARY($length)", $name);
+        $this->columns[] = $column;
+        return $column;
+    }
+
+    public function char(string $name, int $length = 1)
+    {
+        $column = new ColumnDefinition("CHAR($length)", $name);
+        $this->columns[] = $column;
+        return $column;
+    }
+
+    public function mediumText(string $name)
+    {
+        $column = new ColumnDefinition("MEDIUMTEXT", $name);
+        $this->columns[] = $column;
+        return $column;
+    }
+
+    public function longText(string $name)
+    {
+        $column = new ColumnDefinition("LONGTEXT", $name);
+        $this->columns[] = $column;
+        return $column;
+    }
+
+    public function year(string $name)
+    {
+        $column = new ColumnDefinition("YEAR", $name);
+        $this->columns[] = $column;
+        return $column;
+    }
+
     public function timestamp(string $name)
     {
         $column = new ColumnDefinition("TIMESTAMP", $name);

@@ -26,8 +26,14 @@ class Auth
 
             foreach ($fields as $field) {
                 $user = User::query()->where($field, '=', $credentials['identifier'])->first();
+
+                if ($user && is_array($user)) {
+                    $user = new User($user);
+                }
+
                 if ($user) break;
             }
+
 
             if (!$user) {
                 if ($throttleEnabled) Throttle::increment($throttleKey);
@@ -82,7 +88,8 @@ class Auth
         $data = Session::get($sessionKey);
 
         if ($data) {
-            return new User($data);
+            // Normalisasi
+            return $data instanceof User ? $data : new User((array)$data);
         }
 
         return null;

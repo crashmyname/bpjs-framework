@@ -27,6 +27,8 @@ class BaseModel
     protected $limit;
     protected $offset;
     protected $orWhereConditions = [];
+    protected $with = [];
+
 
     public function __construct($attributes = [])
     {
@@ -317,7 +319,7 @@ class BaseModel
         return $this;
     }
 
-    public function get($fetchStyle = PDO::FETCH_OBJ)
+    public function get($fetchStyle = PDO::FETCH_OBJ, $asModel = false)
     {
         try {
             $table = self::$dynamicTable ?? $this->table;
@@ -340,7 +342,7 @@ class BaseModel
                     $conditions[] = '(' . implode(' OR ', $this->orWhereConditions) . ')';
                 }
 
-                $sql .= implode(' AND ', $conditions); // Gabung AND dan OR dengan benar
+                $sql .= implode(' AND ', $conditions);
             }
 
             if (!empty($this->groupBy)) {
@@ -366,7 +368,30 @@ class BaseModel
             }
 
             $stmt->execute();
-            return $stmt->fetchAll($fetchStyle);
+
+            if (!$asModel && empty($this->with)) {
+                return $stmt->fetchAll($fetchStyle);
+            }
+
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $models = [];
+
+            foreach ($rows as $row) {
+                $model = new static();
+                $model->fill($row);
+
+                foreach ($this->with as $relation) {
+                    if (method_exists($model, $relation)) {
+                        $related = $model->$relation();
+                        $model->attributes[$relation] = $related;
+                    }
+                }
+
+                $models[] = $model;
+            }
+
+            return $models;
+
         } catch (\Exception $e) {
             if (env('APP_DEBUG') == 'false') {
                 if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
@@ -382,6 +407,115 @@ class BaseModel
             }
             ErrorHandler::handleException($e);
             return [];
+        }
+    }
+
+    public function getWithRelations($fetchStyle = PDO::FETCH_OBJ)
+    {
+        return $this->get($fetchStyle, true);
+    }
+
+    public function paginate($perPage = 10, $fetchStyle = PDO::FETCH_OBJ)
+    {
+        try {
+            $table = self::$dynamicTable ?? $this->table;
+
+            // Ambil current page dari query string (?page=...), default 1
+            $currentPage = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+            if ($currentPage < 1) {
+                $currentPage = 1;
+            }
+
+            // Build query dasar (tanpa limit & offset)
+            $sql = "SELECT {$this->distinct} " . implode(', ', $this->selectColumns) . " FROM {$table}";
+
+            if (!empty($this->joins)) {
+                $sql .= ' ' . implode(' ', $this->joins);
+            }
+
+            $whereClause = '';
+            if (!empty($this->whereConditions) || !empty($this->orWhereConditions)) {
+                $whereClause .= ' WHERE ';
+                $conditions = [];
+
+                if (!empty($this->whereConditions)) {
+                    $conditions[] = '(' . implode(' AND ', $this->whereConditions) . ')';
+                }
+
+                if (!empty($this->orWhereConditions)) {
+                    $conditions[] = '(' . implode(' OR ', $this->orWhereConditions) . ')';
+                }
+
+                $whereClause .= implode(' AND ', $conditions);
+                $sql .= $whereClause;
+            }
+
+            if (!empty($this->groupBy)) {
+                $sql .= ' GROUP BY ' . $this->groupBy;
+            }
+
+            if (!empty($this->orderBy)) {
+                $sql .= ' ORDER BY ' . implode(', ', $this->orderBy);
+            }
+
+            // ==== HITUNG TOTAL DATA ====
+            $countSql = "SELECT COUNT(*) as total FROM (
+                SELECT {$this->distinct} " . implode(', ', $this->selectColumns) . " FROM {$table}";
+
+            if (!empty($this->joins)) {
+                $countSql .= ' ' . implode(' ', $this->joins);
+            }
+
+            if (!empty($whereClause)) {
+                $countSql .= " " . $whereClause;
+            }
+
+            $countSql .= ") as subquery";
+            $stmtCount = $this->connection->prepare($countSql);
+            foreach ($this->whereParams as $key => $value) {
+                $stmtCount->bindValue($key, $value);
+            }
+            $stmtCount->execute();
+            $total = (int) $stmtCount->fetchColumn();
+
+            // ==== HITUNG PAGINATION ====
+            $lastPage = max(1, (int) ceil($total / $perPage));
+            $currentPage = max(1, min($currentPage, $lastPage));
+            $offset = ($currentPage - 1) * $perPage;
+
+            // ==== QUERY DATA PAGINATED ====
+            $sql .= " LIMIT {$perPage} OFFSET {$offset}";
+            $stmt = $this->connection->prepare($sql);
+            foreach ($this->whereParams as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+            $stmt->execute();
+            $data = $stmt->fetchAll($fetchStyle);
+
+            return [
+                "data" => $data,
+                "pagination" => [
+                    "total"        => $total,
+                    "per_page"     => $perPage,
+                    "current_page" => $currentPage,
+                    "last_page"    => $lastPage,
+                    "from"         => $offset + 1,
+                    "to"           => $offset + count($data),
+                ]
+            ];
+        } catch (\Exception $e) {
+            ErrorHandler::handleException($e);
+            return [
+                "data" => [],
+                "pagination" => [
+                    "total" => 0,
+                    "per_page" => $perPage,
+                    "current_page" => 1,
+                    "last_page" => 1,
+                    "from" => null,
+                    "to" => null,
+                ]
+            ];
         }
     }
 
@@ -474,12 +608,13 @@ class BaseModel
     public function first()
     {
         $this->limit(1);
-        $results = $this->get();
+        $results = $this->get(PDO::FETCH_ASSOC, true); // ambil sebagai model
         if (!empty($results)) {
-            return new static($results[0]);
+            return $results[0];
         }
         return null;
     }
+
 
     public static function setCustomTable($parameter)
     {
@@ -615,33 +750,37 @@ class BaseModel
     {
         try {
             $this->connection = DB::getConnection();
+            $table = self::$dynamicTable ?? $this->table;
 
-            if (isset($this->attributes[$this->primaryKey])) {
-                $this->updates(); // Menggunakan update jika sudah ada primary key
+            // pastikan ada data
+            if (empty($this->attributes)) {
+                throw new \Exception("No attributes set for save()");
+            }
+
+            if (!empty($this->attributes[$this->primaryKey])) {
+                // update
+                $this->updates();
             } else {
-                // Menyiapkan kolom dan placeholders
+                // insert
                 $columns = implode(',', array_keys($this->attributes));
                 $placeholders = ':' . implode(', :', array_keys($this->attributes));
 
-                $table = self::$dynamicTable ?? $this->table;
-                // Menambahkan RETURNING untuk mengambil nilai primary key
                 $sql = "INSERT INTO {$table} ({$columns}) VALUES ({$placeholders})";
-
-                // Menyiapkan statement
                 $stmt = $this->connection->prepare($sql);
 
-                // Mengikat parameter
                 foreach ($this->attributes as $key => $value) {
                     $stmt->bindValue(':' . $key, $value);
                 }
 
-                // Eksekusi query
                 $stmt->execute();
 
-                // Mengambil ID yang baru dimasukkan menggunakan RETURNING
-                // $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                $this->attributes[$this->primaryKey] = $this->connection->lastInsertId();
+                // simpan id terakhir kalau ada primaryKey
+                if ($this->primaryKey) {
+                    $this->attributes[$this->primaryKey] = $this->connection->lastInsertId();
+                }
             }
+
+            return true; // biar bisa dicek berhasil/tidak
         } catch (\Exception $e) {
             if (env('APP_DEBUG') == 'false') {
                 if (Request::isAjax() || (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)) {
@@ -655,7 +794,7 @@ class BaseModel
                 }
                 exit;
             }
-            ErrorHandler::handleException($e); // Menangani error
+            ErrorHandler::handleException($e);
         }
     }
 
@@ -859,8 +998,14 @@ class BaseModel
     // One-to-Many relationship
     public function hasMany($relatedModel, $foreignKey, $localKey = 'id')
     {
+        if (!isset($this->attributes[$localKey])) {
+            return []; // tidak ada localKey di atribut
+        }
+
         $relatedInstance = new $relatedModel();
-        return $relatedInstance->where($foreignKey, '=', $this->attributes[$localKey])->get();
+        return $relatedInstance
+            ->where($foreignKey, '=', $this->attributes[$localKey])
+            ->get(PDO::FETCH_ASSOC, true); // ambil sebagai model
     }
 
     // Belongs-to relationship
@@ -900,52 +1045,72 @@ class BaseModel
         return $result !== null;
     }
     
-    public function with($relations)
+    public function with($relation)
     {
-        // Jika relations adalah array, lakukan iterasi untuk setiap relasi
-        if (is_array($relations)) {
-            foreach ($relations as $relation) {
-                $this->load($relation); // Pastikan load relasi
-            }
-        } else {
-            $this->load($relations);
+        if (!method_exists($this, $relation)) {
+            throw new \Exception("Relation {$relation} not defined in " . static::class);
         }
 
-        return $this; // Kembalikan instance model yang sudah dimuat relasinya
+        $this->$relation = $this->$relation(); // jalankan method relasi dan simpan hasilnya
+        return $this;
     }
 
-    public function load($relation)
-    {
-        // Mengecek apakah relasi yang diminta ada di model ini
-        if (method_exists($this, $relation)) {
-            // Panggil metode relasi dan muat datanya
-            $relationInstance = $this->{$relation}(); // Mengambil relasi yang diminta
-            
-            // Jika relasi memiliki query builder, kita bisa mengakses datanya
-            if (method_exists($relationInstance, 'get')) {
-                $this->{$relation} = $relationInstance->get(); // Mengambil hasil relasi
-            } else {
-                // Jika relasi tidak mengembalikan query builder, kita anggap hasilnya sudah ada
-                $this->{$relation} = $relationInstance;
-            }
-        }
 
+    public function load($relations)
+    {
+        $this->with = is_array($relations) ? $relations : func_get_args();
         return $this;
     }
 
 
     public function toArray()
     {
-        return $this->attributes;
+        $data = $this->attributes;
+
+        // Ambil juga relasi yang sudah dimuat (property tambahan selain attributes)
+        foreach (get_object_vars($this) as $key => $value) {
+            if (!in_array($key, [
+                'table','primaryKey','fillable','guarded','attributes',
+                'connection','selectColumns','whereConditions','whereParams',
+                'joins','groupBy','orderBy','distinct','limit','offset','orWhereConditions'
+            ])) {
+                if ($value instanceof BaseModel) {
+                    $data[$key] = $value->toArray();
+                } elseif (is_array($value)) {
+                    $data[$key] = array_map(function($item) {
+                        return $item instanceof BaseModel ? $item->toArray() : $item;
+                    }, $value);
+                } else {
+                    $data[$key] = $value;
+                }
+            }
+        }
+
+        return $data;
     }
 
-    public function __get($name)
+
+    public function __get($key)
     {
-        return $this->attributes[$name] ?? null;
+        // Kalau ada di attributes
+        if (array_key_exists($key, $this->attributes)) {
+            return $this->attributes[$key];
+        }
+
+        // Kalau ada relasi yang sudah dimuat
+        if (method_exists($this, $key)) {
+            if (!isset($this->attributes[$key])) {
+                $this->attributes[$key] = $this->$key();
+            }
+            return $this->attributes[$key];
+        }
+
+        return null;
     }
 
-    public function __set($name, $value)
+    public function __set($key, $value)
     {
-        $this->attributes[$name] = $value;
+        $this->attributes[$key] = $value;
     }
+
 }

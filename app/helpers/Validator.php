@@ -127,6 +127,11 @@ class Validator {
         }
 
         if (!isset($file['tmp_name']) || $file['tmp_name'] === '' || $file['error'] === 4) {
+            $this->errors[$field][] = $this->getMessage(
+                $field,
+                'required',
+                "$field is required."
+            );
             return;
         }
 

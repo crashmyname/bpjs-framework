@@ -18,6 +18,10 @@ class AuthMiddleware
             if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
                 http_response_code(401); // Unauthorized
                 exit;
+            } elseif (!empty($_SERVER['HTTP_HX_REQUEST']) && $_SERVER['HTTP_HX_REQUEST'] === 'true'){
+                header('HX-Redirect: '.base_url().'login');
+                http_response_code(200);
+                exit;
             } else {
                 return redirect('login');
             }
@@ -31,6 +35,10 @@ class AuthMiddleware
             session_destroy();
             if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
                 http_response_code(401); // Unauthorized
+                exit;
+            } elseif (!empty($_SERVER['HTTP_HX_REQUEST']) && $_SERVER['HTTP_HX_REQUEST'] === 'true'){
+                header('HX-Redirect: '.base_url().'login');
+                http_response_code(200);
                 exit;
             } else {
                 return redirect('login');
