@@ -2,8 +2,8 @@
 namespace App\Services;
 
 use App\Models\User;
-use Helpers\Hash;
-use Helpers\Validator;
+use Bpjs\Framework\Helpers\Hash;
+use Bpjs\Framework\Helpers\Validator;
 
 class UserService
 {
@@ -24,7 +24,7 @@ class UserService
 
     public function login(string $username, string $password): ?User
     {
-        $user = User::where('username', $username)->first();
+        $user = User::query()->where('username', $username)->first();
         if ($user && Hash::verify($password, $user->password)) {
             return $user;
         }
