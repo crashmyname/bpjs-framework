@@ -3,7 +3,7 @@
         'name' => 'bpjs/bpjs',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'b0eadd3b134354e67930aa1b697cc20fe37fe781',
+        'reference' => '4e635b1242c91c13747c10c7361328ede56abd4c',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'bpjs/bpjs' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'b0eadd3b134354e67930aa1b697cc20fe37fe781',
+            'reference' => '4e635b1242c91c13747c10c7361328ede56abd4c',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -22,7 +22,7 @@
         'bpjs/framework' => array(
             'pretty_version' => '1.0',
             'version' => '1.0.0.0',
-            'reference' => 'bac6ecfc2f912b1f38311d95052ffad83d61a2b8',
+            'reference' => 'cb98f264d587d39108d5022c623f515a712fa4a1',
             'type' => 'library',
             'install_path' => __DIR__ . '/../bpjs/framework',
             'aliases' => array(),
