@@ -56,7 +56,15 @@ class SessionMiddleware {
     public static function set($key, $value) {
         if (session_status() === PHP_SESSION_ACTIVE) {
             $encrypt = config('session.encrypt', false);
-            $_SESSION[$key] = $encrypt ? base64_encode(serialize($value)) : $value;
+            if ($encrypt) {
+                $keyEnc = hash('sha256', env('APP_KEY', 'default_app_key'));
+                $iv = random_bytes(16);
+                $cipher = openssl_encrypt(serialize($value), 'AES-256-CBC', $keyEnc, 0, $iv);
+                $_SESSION[$key] = base64_encode($iv . $cipher);
+            } else {
+                $_SESSION[$key] = $value;
+            }
+
         }
     }
 
@@ -64,7 +72,14 @@ class SessionMiddleware {
         if (session_status() === PHP_SESSION_ACTIVE) {
             $encrypt = config('session.encrypt', false);
             $value = $_SESSION[$key] ?? null;
-            return $encrypt && $value !== null ? unserialize(base64_decode($value)) : $value;
+            if ($encrypt && $value !== null) {
+                $keyEnc = hash('sha256', env('APP_KEY', 'default_app_key'));
+                $data = base64_decode($value);
+                $iv = substr($data, 0, 16);
+                $cipher = substr($data, 16);
+                $decrypted = openssl_decrypt($cipher, 'AES-256-CBC', $keyEnc, 0, $iv);
+                return unserialize($decrypted);
+            }
         }
         return null;
     }
@@ -86,9 +101,9 @@ class SessionMiddleware {
 
         if (self::get('device_fingerprint') !== $fingerprint) {
             self::destroy(); 
-            header("Location: /login"); 
-            exit;
+            return false;
         }
+        return true;
     }
 
     public static function storeDeviceFingerprint() {

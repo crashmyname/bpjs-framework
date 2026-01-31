@@ -1,7 +1,7 @@
 <?php
 namespace Bpjs\Core;
 
-use Helpers\Date;
+use Bpjs\Framework\Helpers\Date;
 
 class Request
 {
@@ -13,6 +13,15 @@ class Request
     {
         $this->data = array_merge($this->sanitize($_GET), $this->sanitize($_POST));
         $this->files = $this->normalizeFiles($_FILES);
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        if (str_contains($contentType, 'application/json')) {
+            $json = json_decode(file_get_contents('php://input'), true);
+            if (is_array($json)) {
+                $this->data = array_merge($this->data, $this->sanitize($json));
+            }
+        }
+        $this->data = $this->sanitizeKeys($this->data);
+        $this->files = $this->sanitizeKeys($this->files);
     }
 
     public static function capture(): static
@@ -26,12 +35,39 @@ class Request
     private function sanitize(array $data): array
     {
         $sanitized = [];
+
         foreach ($data as $key => $value) {
-            $sanitized[$key] = is_array($value)
-                ? $this->sanitize($value)
-                : htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+            if (is_array($value)) {
+                $sanitized[$key] = $this->sanitize($value);
+                continue;
+            }
+            $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+            $allowedTags = '<b><i><u><strong><em><a><p><br>';
+            $clean = strip_tags($value, $allowedTags);
+            $clean = preg_replace('/on\w+\s*=\s*["\'][^"\']*["\']/i', '', $clean);
+            $clean = preg_replace('/expression\s*\(.*\)/i', '', $clean);
+            $clean = preg_replace('/((javascript|vbscript|mocha|livescript)\s*:)/i', '', $clean);
+            $clean = htmlspecialchars($clean, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+            $sanitized[$key] = trim($clean);
         }
+
         return $sanitized;
+    }
+
+    public static function escape(string $value): string
+    {
+        return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+
+    private function sanitizeKeys(array $array): array
+    {
+        $clean = [];
+        foreach ($array as $key => $value) {
+            $safeKey = preg_replace('/[^a-zA-Z0-9_\-]/', '', $key);
+            $clean[$safeKey] = is_array($value) ? $this->sanitizeKeys($value) : $value;
+        }
+        return $clean;
     }
 
     /** -------------------------
@@ -144,6 +180,11 @@ class Request
         ];
     }
 
+    public function hasFile($key): bool
+    {
+        return isset($this->files[$key]) && isset($this->files[$key]['tmp_name']) && $this->files[$key]['error'] === 0;
+    }
+
     public function getClientOriginalExtension($key): string
     {
         $file = $this->files[$key] ?? null;
@@ -176,6 +217,24 @@ class Request
     public function all(): array
     {
         return array_merge($this->data, $this->files);
+    }
+
+    public function input(string $key, $default = null)
+    {
+        $value = $this->data[$key] ?? $_REQUEST[$key] ?? $default;
+
+        if (is_string($value)) {
+            $decodedValue = html_entity_decode($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $json = json_decode($decodedValue, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $json;
+            }
+        }
+        if (is_array($value)) {
+            return $value;
+        }
+
+        return $value;
     }
 
     public function get($key)

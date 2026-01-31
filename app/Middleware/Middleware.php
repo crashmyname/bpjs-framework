@@ -2,6 +2,7 @@
 namespace Middlewares;
 
 use App\Models\User;
+use Bpjs\Framework\Helpers\Response;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Helpers\View;
@@ -21,19 +22,24 @@ class Middleware
     {
         $headers = getallheaders();
 
-        // Periksa keberadaan Authorization Header
+        $cookieToken = cookie_get('token');
+        if ($cookieToken) {
+            return $this->validateJWT($cookieToken);
+        }
+
         if (!isset($headers['Authorization'])) {
             header('Content-Type: application/json');
             header("HTTP/1.1 401 Unauthorized");
-            echo json_encode(['error' => 'Authorization token tidak ditemukan']);
+            Response::json([
+                'status' => 400,
+                'message' => 'Authorization token tidak ditemukan',
+            ],400);
             return false;
         }
 
-        // Ambil Authorization token
         $authHeader = $headers['Authorization'];
-        $token = substr($authHeader, 7); // Mengambil token setelah 'Bearer '
+        $token = substr($authHeader, 7);
 
-        // Validasi token berdasarkan panjang (JWT atau Bearer)
         if (strlen($token) > 128) {
             if (!$this->validateJWT($token)) {
                 return false;
@@ -44,15 +50,16 @@ class Middleware
             }
         }
 
-        // Periksa keberadaan api_token di header
         if (!isset($headers['api_key'])) {
             header('Content-Type: application/json');
             header("HTTP/1.1 401 Unauthorized");
-            echo json_encode(['error' => 'API Token tidak ditemukan']);
+            Response::json([
+                'status' => 400,
+                'message' => 'API Token tidak ditemukan',
+            ],400);
             return false;
         }
 
-        // Validasi api_token
         $apiToken = $headers['api_key'];
         if (!$this->validateApiToken($apiToken)) {
             return false;
@@ -61,47 +68,68 @@ class Middleware
         return true;
     }
 
-    // Fungsi untuk memvalidasi Bearer Token biasa
     private function validateBearer($token)
     {
         if (!isset($_SESSION['token']) || $_SESSION['token'] !== $token) {
             header('Content-Type: application/json');
             header("HTTP/1.1 401 Unauthorized");
-            echo json_encode(['error' => 'Bearer Token tidak valid']);
+            Response::json([
+                'status' => 400,
+                'message' => 'Bearer Token tidak valid',
+            ],400);
             return false;
         }
 
         return true;
     }
 
-    // Fungsi untuk memvalidasi JWT
     private function validateJWT($token)
     {
         try {
             $decoded = JWT::decode($token, new Key(env('JWT_SECRET'), 'HS256'));
-            $_SESSION['user'] = $decoded; // Simpan informasi user dari JWT
+            $_SESSION['user'] = (array) $decoded;
+            if (isset($decoded->sign, $decoded->sub)) {
+                $expectedSign = hash_hmac('SHA256', $decoded->sub . env('JWT_SECRET'), env('JWT_SECRET'));
+
+                if (!hash_equals($expectedSign, $decoded->sign)) {
+                    Response::json([
+                        'status' => 401,
+                        'message' => 'JWT sign tidak valid'
+                    ], 401);
+                    return false;
+                }
+            }
+
+            return true;
         } catch (\Exception $e) {
-            header('Content-Type: application/json');
-            header("HTTP/1.1 401 Unauthorized");
-            echo json_encode(['error' => 'JWT Token tidak valid', 'message' => $e->getMessage()]);
+            Response::json([
+                'status' => 401,
+                'message' => 'JWT Token tidak valid: ' . $e->getMessage()
+            ], 401);
             return false;
         }
-
-        return true;
     }
 
-    // Fungsi untuk memvalidasi api_token
     private function validateApiToken($apiToken)
     {
         $user = User::query()->where('api_key','=',$apiToken)->first();
-        // Validasi API token, misalnya mencocokkan dengan token yang disimpan di database
-        if ($apiToken !== $user->api_key) { // Contoh validasi dengan .env
+        if(!$user){
+            return Response::json([
+                'status' => 404,
+                'message' => 'User not found'
+            ],404);
+        }
+        if ($apiToken !== $user->api_key) { 
             header('Content-Type: application/json');
             header("HTTP/1.1 401 Unauthorized");
-            echo json_encode(['error' => 'API Token tidak valid']);
+            Response::json([
+                'status' => 400,
+                'message' => 'API Token tidak valid',
+            ],400);
             return false;
         }
 
         return true;
     }
 }
+

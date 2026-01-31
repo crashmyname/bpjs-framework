@@ -23,5 +23,10 @@
             "email": "fadliazkaprayogi1@gmail.com"
         }
     ],
+    "scripts": {
+        "post-install-cmd": [
+            "php bpjs generate:key"
+        ]
+    },
     "minimum-stability": "stable"
 }
