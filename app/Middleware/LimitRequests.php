@@ -3,7 +3,7 @@ namespace Middlewares;
 
 use Bpjs\Core\Request;
 use Bpjs\Core\Response;
-use Helpers\View;
+use Bpjs\Framework\Helpers\View;
 
 class LimitRequests
 {

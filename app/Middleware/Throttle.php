@@ -2,7 +2,7 @@
 
 namespace Middlewares;
 
-use Helpers\Session;
+use Bpjs\Framework\Helpers\Session;
 
 class Throttle {
     public static function tooManyAttempts($key): bool {

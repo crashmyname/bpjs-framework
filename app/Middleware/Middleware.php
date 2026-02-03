@@ -5,7 +5,7 @@ use App\Models\User;
 use Bpjs\Framework\Helpers\Response;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use Helpers\View;
+use Bpjs\Framework\Helpers\View;
 
 class Middleware
 {

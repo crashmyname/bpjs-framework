@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Controller;
-use Helpers\BaseController;
+use Bpjs\Framework\Helpers\BaseController;
 
 class Controller extends BaseController{
     
