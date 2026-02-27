@@ -1,8 +1,8 @@
 # BPJS Framework ✨
-- Update Versi 0.1.2
+- Update Versi 0.2.0
 
 ## Documentation ✨✨
-- Untuk Dokumentasi jelas kunjungi install langsung saja lewat composer di get started ada guidenya kok
+- get started ada guidenya kok
 ```
 
 - Insalasi
