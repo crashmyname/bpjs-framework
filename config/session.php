@@ -9,8 +9,8 @@ return [
     'encrypt' => false,
 
     'http_only' => true,
-    'secure' => env('SESSION_SECURE_COOKIE', false),
-    'same_site' => 'lax',
+    'secure' => filter_var(env('SESSION_SECURE_COOKIE', false), FILTER_VALIDATE_BOOLEAN),
+    'same_site' => 'Lax',
 
-    'storage_path' => BPJS_BASE_PATH . '/storage/session',
+    'storage_path' => BPJS_BASE_PATH . '/storage/session/'.env('APP_NAME'),
 ];

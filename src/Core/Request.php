@@ -168,13 +168,13 @@ class Request
         $sizeMB = $sizeKB / 1024;
 
         return [
-            'original_name' => $file['name'] ?? '',
+            'name' => $file['name'] ?? '',
             'extension' => pathinfo($file['name'] ?? '', PATHINFO_EXTENSION),
             'mime_type' => $file['type'] ?? '',
             'size' => $size,
             'size_kb' => round($sizeKB, 2),
             'size_mb' => round($sizeMB, 2),
-            'tmp_path' => $file['tmp_name'] ?? '',
+            'tmp_name' => $file['tmp_name'] ?? '',
             'error' => $file['error'] ?? 0,
             'uploaded_at' => Date::Now(),
         ];
@@ -237,6 +237,43 @@ class Request
         return $value;
     }
 
+    public function header(string $key, $default = null)
+    {
+        $key = 'HTTP_' . strtoupper(str_replace('-', '_', $key));
+        return $_SERVER[$key] ?? $default;
+    }
+
+    public function headers(): array
+    {
+        $headers = [];
+
+        foreach ($_SERVER as $key => $value) {
+            if (str_starts_with($key, 'HTTP_')) {
+                $formatted = str_replace('_', '-', strtolower(substr($key, 5)));
+                $headers[$formatted] = $value;
+            }
+        }
+
+        return $headers;
+    }
+
+    public function expectsJson(): bool
+    {
+        $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+        return str_contains($accept, 'application/json');
+    }
+
+    public function isJson(): bool
+    {
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        return str_contains($contentType, 'application/json');
+    }
+
+    public function method(): string
+    {
+        return $_SERVER['REQUEST_METHOD'] ?? 'GET';
+    }
+
     public function get($key)
     {
         return $this->data[$key] ?? $this->files[$key] ?? null;
@@ -258,8 +295,11 @@ class Request
      *  ------------------------*/
     public static function isAjax(): bool
     {
-        return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-            && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+        $xRequested = $_SERVER['HTTP_X_REQUESTED_WITH'] ?? '';
+        $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+        
+        return strtolower($xRequested) === 'xmlhttprequest'
+            || str_contains($accept, 'application/json');
     }
 
     public function setRateLimit(int $limit): void

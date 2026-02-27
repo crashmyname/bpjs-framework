@@ -9,6 +9,8 @@ class SessionMiddleware {
                 $config = [];
             }
             $lifetime = ($config['expire_on_close'] ?? false) ? 0 : ($config['lifetime'] ?? 120) * 60;
+            ini_set('session.gc_maxlifetime', $lifetime);
+            ini_set('session.cookie_lifetime', $lifetime);
 
             $sessionName = strtoupper(preg_replace('/[^a-zA-Z0-9]/', '_', $config['app_name'] ?? 'bpjs')) . '_SESSID';
             session_name($sessionName);
@@ -40,7 +42,6 @@ class SessionMiddleware {
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
             }
 
-            // Simpan fingerprint device (opsional)
             self::storeDeviceFingerprint();
         }
     }
