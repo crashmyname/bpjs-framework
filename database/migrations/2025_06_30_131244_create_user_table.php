@@ -2,7 +2,7 @@
 
 // use PDO;
 
-use Helpers\SchemaBuilder;
+use Bpjs\Framework\Helpers\SchemaBuilder;
 
 class CreateUserTable
 {
@@ -19,9 +19,21 @@ class CreateUserTable
         $sql = $table->buildCreateSQL();
         try {
             $pdo->exec($sql);
-            echo "✅ Table 'user' berhasil dibuat\n";
+            echo "Table 'user' berhasil dibuat\n";
+            $stmt = $pdo->prepare("
+                INSERT INTO users (name, username, password)
+                VALUES (:name, :username, :password)
+            ");
+
+            $stmt->execute([
+                ':name' => 'Administrator',
+                ':username' => 'admin',
+                ':password' => password_hash('admin123', PASSWORD_BCRYPT)
+            ]);
+
+            echo "User admin berhasil dibuat\n";
         } catch (\PDOException $e) {
-            echo "❌ Gagal membuat tabel: " . $e->getMessage() . "\n";
+            echo "Gagal membuat tabel: " . $e->getMessage() . "\n";
             echo "SQL: $sql\n";
         }
 

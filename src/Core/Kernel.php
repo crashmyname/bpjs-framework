@@ -19,22 +19,60 @@ class Kernel
 
     protected function mapRoutes(): void
     {
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); 
-        $appBasePath = app_base_path();
-        $cleanUri = preg_replace('#^' . preg_quote($appBasePath, '#') . '#', '', $uri);
-        $cleanUri = '/' . ltrim($cleanUri, '/');
+        if (php_sapi_name() === 'cli') {
+            Route::init(app_base_path());
+            require BPJS_BASE_PATH . '/routes/web.php';
 
-        $apiPrefix = '/api';
+            Api::init(api_prefix());
+            require BPJS_BASE_PATH . '/routes/api.php';
 
-        if (str_starts_with($cleanUri, $apiPrefix)) {
+            return;
+        }
+        $cacheFile = BPJS_BASE_PATH . '/storage/cache/routes.php';
+
+        if (file_exists($cacheFile)) {
+            $routes = require $cacheFile;
+
+            if ($this->isApiRequest()) {
+                $this->dispatcherType = 'api';
+                Api::init(api_prefix());
+                Api::setRoutes($routes['api']);
+                Api::setNames($routes['api_names'] ?? []);
+            } else {
+                $this->dispatcherType = 'web';
+                Route::init(app_base_path());
+                Route::setRoutes($routes['web']);
+                Route::setNames($routes['web_names'] ?? []);
+            }
+
+            return;
+        }
+
+        // fallback normal
+        $uri = $_SERVER['REQUEST_URI'] ?? '/';
+        $uri = parse_url($uri, PHP_URL_PATH);
+
+        if (str_starts_with($uri, '/api')) {
             $this->dispatcherType = 'api';
             Api::init(api_prefix());
             require BPJS_BASE_PATH . '/routes/api.php';
         } else {
             $this->dispatcherType = 'web';
-            Route::init($appBasePath);
+            Route::init(app_base_path());
             require BPJS_BASE_PATH . '/routes/web.php';
         }
+    }
+
+    private function isApiRequest(): bool
+    {
+        $uri = $_SERVER['REQUEST_URI'] ?? '/';
+        $uri = parse_url($uri, PHP_URL_PATH);
+        return str_starts_with($uri, '/api');
+    }
+
+    private function getUri(): string
+    {
+        return parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
     }
 
     public function handle(Request $request): Response

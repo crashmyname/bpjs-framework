@@ -2,17 +2,17 @@
     "packages": [
         {
             "name": "bpjs/framework",
-            "version": "2.0",
-            "version_normalized": "2.0.0.0",
+            "version": "2.1",
+            "version_normalized": "2.1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/crashmyname/bpjs-fw.git",
-                "reference": "c002ab53e0db9854813984ecd12159e35d857bce"
+                "reference": "17aece144066a414aacf6605b3c20782e9b0b679"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/crashmyname/bpjs-fw/zipball/c002ab53e0db9854813984ecd12159e35d857bce",
-                "reference": "c002ab53e0db9854813984ecd12159e35d857bce",
+                "url": "https://api.github.com/repos/crashmyname/bpjs-fw/zipball/17aece144066a414aacf6605b3c20782e9b0b679",
+                "reference": "17aece144066a414aacf6605b3c20782e9b0b679",
                 "shasum": ""
             },
             "require": {
@@ -21,7 +21,7 @@
                 "phpmailer/phpmailer": "^6.9",
                 "phpoffice/phpspreadsheet": "^3.4"
             },
-            "time": "2026-02-27T07:04:17+00:00",
+            "time": "2026-04-23T09:45:57+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -45,7 +45,7 @@
             "description": "framework support for bpjs",
             "support": {
                 "issues": "https://github.com/crashmyname/bpjs-fw/issues",
-                "source": "https://github.com/crashmyname/bpjs-fw/tree/2.0"
+                "source": "https://github.com/crashmyname/bpjs-fw/tree/2.1"
             },
             "install-path": "../bpjs/framework"
         },
@@ -310,39 +310,39 @@
         },
         {
             "name": "maennchen/zipstream-php",
-            "version": "3.1.2",
-            "version_normalized": "3.1.2.0",
+            "version": "3.2.2",
+            "version_normalized": "3.2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/maennchen/ZipStream-PHP.git",
-                "reference": "aeadcf5c412332eb426c0f9b4485f6accba2a99f"
+                "reference": "77bebeb4c6c340bb3c11c843b2cffd8bbfde4d5e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/maennchen/ZipStream-PHP/zipball/aeadcf5c412332eb426c0f9b4485f6accba2a99f",
-                "reference": "aeadcf5c412332eb426c0f9b4485f6accba2a99f",
+                "url": "https://api.github.com/repos/maennchen/ZipStream-PHP/zipball/77bebeb4c6c340bb3c11c843b2cffd8bbfde4d5e",
+                "reference": "77bebeb4c6c340bb3c11c843b2cffd8bbfde4d5e",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
                 "ext-zlib": "*",
-                "php-64bit": "^8.2"
+                "php-64bit": "^8.3"
             },
             "require-dev": {
                 "brianium/paratest": "^7.7",
                 "ext-zip": "*",
-                "friendsofphp/php-cs-fixer": "^3.16",
+                "friendsofphp/php-cs-fixer": "^3.86",
                 "guzzlehttp/guzzle": "^7.5",
                 "mikey179/vfsstream": "^1.6",
                 "php-coveralls/php-coveralls": "^2.5",
-                "phpunit/phpunit": "^11.0",
+                "phpunit/phpunit": "^12.0",
                 "vimeo/psalm": "^6.0"
             },
             "suggest": {
                 "guzzlehttp/psr7": "^2.4",
                 "psr/http-message": "^2.0"
             },
-            "time": "2025-01-27T12:07:53+00:00",
+            "time": "2026-04-11T18:38:28+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -379,7 +379,7 @@
             ],
             "support": {
                 "issues": "https://github.com/maennchen/ZipStream-PHP/issues",
-                "source": "https://github.com/maennchen/ZipStream-PHP/tree/3.1.2"
+                "source": "https://github.com/maennchen/ZipStream-PHP/tree/3.2.2"
             },
             "funding": [
                 {
@@ -588,17 +588,17 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "3.10.3",
-            "version_normalized": "3.10.3.0",
+            "version": "3.10.5",
+            "version_normalized": "3.10.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "ceba166a6c21830922e145c59999adc855412fe6"
+                "reference": "13f709c73e417c3c8cadc87ac88f809fd8d1fa45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/ceba166a6c21830922e145c59999adc855412fe6",
-                "reference": "ceba166a6c21830922e145c59999adc855412fe6",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/13f709c73e417c3c8cadc87ac88f809fd8d1fa45",
+                "reference": "13f709c73e417c3c8cadc87ac88f809fd8d1fa45",
                 "shasum": ""
             },
             "require": {
@@ -642,7 +642,7 @@
                 "mpdf/mpdf": "Option for rendering PDF with PDF Writer",
                 "tecnickcom/tcpdf": "Option for rendering PDF with PDF Writer"
             },
-            "time": "2026-01-11T06:13:14+00:00",
+            "time": "2026-04-19T05:54:30+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -691,7 +691,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/3.10.3"
+                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/3.10.5"
             },
             "install-path": "../phpoffice/phpspreadsheet"
         },

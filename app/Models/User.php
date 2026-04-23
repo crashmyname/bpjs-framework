@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-use Helpers\BaseModel;
+use Bpjs\Framework\Helpers\BaseModel;
 
 class User extends BaseModel {
     

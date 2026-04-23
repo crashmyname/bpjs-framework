@@ -26,4 +26,14 @@ class Response
 
         return new static($content, $status);
     }
+
+    public function getContent()
+    {
+        return $this->content;
+    }
+    
+    public function getStatusCode()
+    {
+        return $this->status;
+    }
 }
