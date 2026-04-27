@@ -30,10 +30,10 @@ $app = require BPJS_BASE_PATH . '/bootstrap/app.php';
 // ---------------------------------------------------------------
 //  Handle The Incoming Request
 // ---------------------------------------------------------------
-$kernel = $app->make(\Bpjs\Core\Kernel::class);
+$kernel = $app->make(\Bpjs\Framework\Core\Kernel::class);
 
 $response = $kernel->handle(
-    \Bpjs\Core\Request::capture()
+    \Bpjs\Framework\Core\Request::capture()
 );
 
 $response->send();

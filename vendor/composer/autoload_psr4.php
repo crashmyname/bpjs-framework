@@ -20,6 +20,5 @@ return array(
     'Composer\\Pcre\\' => array($vendorDir . '/composer/pcre/src'),
     'Complex\\' => array($vendorDir . '/markbaker/complex/classes/src'),
     'Bpjs\\Framework\\' => array($vendorDir . '/bpjs/framework/src'),
-    'Bpjs\\Core\\' => array($baseDir . '/src/Core'),
     'App\\' => array($baseDir . '/app'),
 );

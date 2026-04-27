@@ -1,12 +1,12 @@
 <?php
-use Bpjs\Core\App;
-use Bpjs\Core\Cache;
-use Bpjs\Core\FileCacheDriver;
+use Bpjs\Framework\Core\App;
+use Bpjs\Framework\Core\Cache;
+use Bpjs\Framework\Core\FileCacheDriver;
 
 $app = new App();
 
-$app->singleton(Bpjs\Core\Kernel::class, function () use ($app) {
-    return new Bpjs\Core\Kernel($app);
+$app->singleton(Bpjs\Framework\Core\Kernel::class, function () use ($app) {
+    return new Bpjs\Framework\Core\Kernel($app);
 });
 
 Cache::init(

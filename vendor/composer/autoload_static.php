@@ -48,7 +48,6 @@ class ComposerStaticInit58a439baa63ce317551a65cb5db0a5b6
         'B' => 
         array (
             'Bpjs\\Framework\\' => 15,
-            'Bpjs\\Core\\' => 10,
         ),
         'A' => 
         array (
@@ -112,10 +111,6 @@ class ComposerStaticInit58a439baa63ce317551a65cb5db0a5b6
         'Bpjs\\Framework\\' => 
         array (
             0 => __DIR__ . '/..' . '/bpjs/framework/src',
-        ),
-        'Bpjs\\Core\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/Core',
         ),
         'App\\' => 
         array (
