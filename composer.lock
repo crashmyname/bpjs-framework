@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "bpjs/framework",
-            "version": "2.1",
+            "version": "2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/crashmyname/bpjs-fw.git",
-                "reference": "17aece144066a414aacf6605b3c20782e9b0b679"
+                "reference": "69189279bb2f7fea7d9466e2a5aac04395fd85df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/crashmyname/bpjs-fw/zipball/17aece144066a414aacf6605b3c20782e9b0b679",
-                "reference": "17aece144066a414aacf6605b3c20782e9b0b679",
+                "url": "https://api.github.com/repos/crashmyname/bpjs-fw/zipball/69189279bb2f7fea7d9466e2a5aac04395fd85df",
+                "reference": "69189279bb2f7fea7d9466e2a5aac04395fd85df",
                 "shasum": ""
             },
             "require": {
@@ -48,9 +48,9 @@
             "description": "framework support for bpjs",
             "support": {
                 "issues": "https://github.com/crashmyname/bpjs-fw/issues",
-                "source": "https://github.com/crashmyname/bpjs-fw/tree/2.1"
+                "source": "https://github.com/crashmyname/bpjs-fw/tree/2.2"
             },
-            "time": "2026-04-23T09:45:57+00:00"
+            "time": "2026-04-27T09:47:35+00:00"
         },
         {
             "name": "composer/pcre",
