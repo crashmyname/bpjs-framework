@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "069032d657662fc8cb46ced94f735195",
+    "content-hash": "8446b46c7326adf500f8a7abe2411cbf",
     "packages": [
         {
             "name": "bpjs/framework",
