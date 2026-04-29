@@ -1,109 +1,102 @@
 <section class="section">
     <div class="section-header">
-        <h1>DataTables</h1>
+        <h1>Session</h1>
     </div>
 
     <div class="section-body">
-        <h4>Helper DataTables</h4>
-        <b>Helper DataTables digunakan untuk membuat data JSON compatible dengan jQuery DataTables.</b><br>
+        <h4>Session adalah helper untuk menyimpan data sementara di server selama user masih aktif.</h4>
+        <b>Metode penggunaan Session</b><br>
 
-        Import DataTables:
+        Set session:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo htmlentities('use Bpjs\Framework\Helpers\DataTables;');
+        echo 'Session::set("nama", "Fervian");';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        <h5>1. Menggunakan Array / Collection (Client-side)</h5>
-        Contoh Penggunaan:
+        Get session:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo htmlentities('$users = [
-    ["id" => 1, "name" => "Fervian"],
-    ["id" => 2, "name" => "Dwi"]
-];
-
-return DataTables::of($users)->make(true);');
+        echo '$nama = Session::get("nama");';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        <h5>2. Menggunakan SQL Query (Server-side)</h5>
-        Contoh Penggunaan:
+        Cek session tersedia:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo htmlentities('$sql = "SELECT id, name, email FROM users";
-
-return DataTables::query($pdo, $sql, ["id", "name", "email"])->make(true);');
+        echo 'if(Session::has("nama")){<br>';
+        echo '&nbsp;&nbsp;echo "Session ada";<br>';
+        echo '}';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        <h5>3. Menambahkan Data Tambahan</h5>
-        Contoh Penggunaan with():
+        Ambil semua session:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo htmlentities('return DataTables::of($users)
-    ->with([
-        "message" => "Success",
-        "status" => 200
-    ])
-    ->make(true);');
+        echo '$all = Session::all();';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        <h5>4. Menambahkan Kolom Baru</h5>
-        Contoh addColumn():
+        Remove session:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo htmlentities('return DataTables::of($users)
-    ->addColumn("action", function($row){
-        return "<a href=\'/edit/".$row["id"]."\'>Edit</a>";
-    })
-    ->make(true);');
+        echo 'Session::remove("nama");';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        <h5>5. Mengubah Isi Kolom</h5>
-        Contoh editColumn():
+        Unset session:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo htmlentities('return DataTables::of($users)
-    ->editColumn("name", function($value, $row){
-        return strtoupper($value);
-    })
-    ->make(true);');
+        echo 'Session::unset("nama");';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        <h5>6. Menentukan Kolom HTML / Raw</h5>
-        Contoh rawColumns():
+        Destroy semua session:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo htmlentities('return DataTables::of($users)
-    ->addColumn("action", function($row){
-        return "<button>Edit</button>";
-    })
-    ->rawColumns(["action"])
-    ->make(true);');
+        echo 'Session::destroy();';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        <h5>7. Response JSON</h5>
-        Hasil response:
+        User session:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo htmlentities('{
-    "draw": 1,
-    "recordsTotal": 100,
-    "recordsFiltered": 100,
-    "data": [...]
-}');
+        echo '$user = Session::user();<br>';
+        echo 'echo $user->name;';
+        echo '</code>';
+        echo '</pre>';
+        ?>
+
+        Flash session set:
+        <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
+        echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
+        echo 'Session::flash("success", "Data berhasil disimpan");';
+        echo '</code>';
+        echo '</pre>';
+        ?>
+
+        Flash session get:
+        <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
+        echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
+        echo 'echo Session::flash("success");<br>';
+        echo '// setelah diambil otomatis terhapus';
+        echo '</code>';
+        echo '</pre>';
+        ?>
+
+        Cek flash tersedia:
+        <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
+        echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
+        echo 'if(Session::hasFlash("success")){<br>';
+        echo '&nbsp;&nbsp;echo Session::flash("success");<br>';
+        echo '}';
         echo '</code>';
         echo '</pre>';
         ?>

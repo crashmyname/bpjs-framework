@@ -103,3 +103,19 @@ Route::get('/dokumentasi/support/store', function(){
     $title = "Store";
     View::render('documentation/support/store',['title'=>$title],'documentation/doc');
 })->name('store');
+Route::get('/dokumentasi/support/queue', function(){
+    $title = "Queue";
+    View::render('documentation/support/queue',['title'=>$title],'documentation/doc');
+})->name('queue');
+Route::get('/dokumentasi/support/session', function(){
+    $title = "Session";
+    View::render('documentation/support/session',['title'=>$title],'documentation/doc');
+})->name('session');
+Route::get('/dokumentasi/support/tableplus', function(){
+    $title = "Tableplus";
+    View::render('documentation/support/tableplus',['title'=>$title],'documentation/doc');
+})->name('tableplus');
+Route::get('/dokumentasi/support/importer', function(){
+    $title = "Importer";
+    View::render('documentation/support/importer',['title'=>$title],'documentation/doc');
+})->name('importer');

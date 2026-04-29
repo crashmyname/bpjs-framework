@@ -1,139 +1,188 @@
 <section class="section">
     <div class="section-header">
-        <h1>Route</h1>
+        <h1>TablePlus</h1>
     </div>
 
     <div class="section-body">
-        <h4>Route adalah helper untuk mendefinisikan URL endpoint aplikasi seperti GET, POST, PUT, DELETE beserta middleware, prefix, dan name route.</h4>
-        <b>Metode penggunaan Route</b><br>
+        <h4>TablePlus digunakan untuk mempermudah membuat API Table / DataTable seperti search, filter, pagination, sorting, dan manipulasi column.</h4>
+        <b>Metode penggunaan TablePlus</b><br>
 
-        Inisialisasi route:
+        Basic Usage:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo 'Route::init();';
+        echo 'TablePlus::of("users")->make();';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        Route GET:
+        Select Column:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo 'Route::get("/home", [HomeController::class, "index"]);';
+        echo 'TablePlus::of("users")<br>';
+        echo '    ->select("id","name","email")<br>';
+        echo '    ->make();';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        Route POST:
+        Left Join:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo 'Route::post("/store", [UserController::class, "store"]);';
+        echo 'TablePlus::of("users")<br>';
+        echo '    ->leftJoin("roles","roles.id","=","users.role_id")<br>';
+        echo '    ->make();';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        Route PUT:
+        Searchable:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo 'Route::put("/update/{id}", [UserController::class, "update"]);';
+        echo 'TablePlus::of("users")<br>';
+        echo '    ->searchable(["name","email"])<br>';
+        echo '    ->make();';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        Route DELETE:
+        Filters:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo 'Route::delete("/delete/{id}", [UserController::class, "destroy"]);';
+        echo 'TablePlus::of("users")<br>';
+        echo '    ->filters([<br>';
+        echo '        "status" => "active"<br>';
+        echo '    ])<br>';
+        echo '    ->make();';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        Route Closure:
+        Where:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo 'Route::get("/", function(){<br>';
-        echo '&nbsp;&nbsp;return "Hello World";<br>';
-        echo '});';
+        echo 'TablePlus::of("users")<br>';
+        echo '    ->where("status","=","active")<br>';
+        echo '    ->make();';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        Route dengan parameter:
+        OrWhere:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo 'Route::get("/user/{id}", [UserController::class, "show"]);';
+        echo 'TablePlus::of("users")<br>';
+        echo '    ->orWhere("role","=","admin")<br>';
+        echo '    ->make();';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        Route name:
+        WhereIn:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo 'Route::get("/dashboard", [DashboardController::class, "index"])->name("dashboard");';
+        echo 'TablePlus::of("users")<br>';
+        echo '    ->whereIn("status",["active","pending"])<br>';
+        echo '    ->make();';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        Generate URL route:
+        WhereBetween:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo 'echo Route::route("dashboard");<br>';
-        echo 'echo Route::route("user.show", ["id" => 1]);';
+        echo 'TablePlus::of("users")<br>';
+        echo '    ->whereBetween("created_at","2025-01-01","2025-12-31")<br>';
+        echo '    ->make();';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        Route group middleware:
+        Order By:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo 'Route::group([AuthMiddleware::class], function(){<br>';
-        echo '&nbsp;&nbsp;Route::get("/profile", [ProfileController::class, "index"]);<br>';
-        echo '&nbsp;&nbsp;Route::get("/setting", [SettingController::class, "index"]);<br>';
-        echo '});';
+        echo 'TablePlus::of("users")<br>';
+        echo '    ->orderBy("id","DESC")<br>';
+        echo '    ->make();';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        Route prefix:
+        Pagination:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo 'Route::prefix("admin", function(){<br>';
-        echo '&nbsp;&nbsp;Route::get("/dashboard", [AdminController::class, "dashboard"]);<br>';
-        echo '});<br><br>';
-        echo '// hasil: /admin/dashboard';
+        echo 'TablePlus::of("users")<br>';
+        echo '    ->paginate(10,1)<br>';
+        echo '    ->make();';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        Route middleware langsung:
+        Distinct:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo 'Route::get("/admin", [AdminController::class, "index"], [AuthMiddleware::class]);';
+        echo 'TablePlus::of("users")<br>';
+        echo '    ->distinct("status");';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        Route limit request:
+        Handle Distinct:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo 'Route::post("/login", [AuthController::class, "login"])->limit(5);';
+        echo 'TablePlus::of("users")<br>';
+        echo '    ->handleDistinct($_GET["distinct"] ?? null)<br>';
+        echo '    ->make();';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        Ambil current route:
+        Add Column:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo '$route = Route::current();<br>';
-        echo 'print_r($route);';
+        echo 'TablePlus::of("users")<br>';
+        echo '    ->addColumn("action", fn($row) => "<button>Edit</button>")<br>';
+        echo '    ->make();';
         echo '</code>';
         echo '</pre>';
         ?>
 
-        Dispatch route:
+        Edit Column:
         <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
         echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
-        echo '$response = Route::dispatch();<br>';
-        echo '$response->send();';
+        echo 'TablePlus::of("users")<br>';
+        echo '    ->editColumn("status", fn($value) => strtoupper($value))<br>';
+        echo '    ->make();';
+        echo '</code>';
+        echo '</pre>';
+        ?>
+
+        Remove Column:
+        <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
+        echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
+        echo 'TablePlus::of("users")<br>';
+        echo '    ->removeColumn("password")<br>';
+        echo '    ->make();';
+        echo '</code>';
+        echo '</pre>';
+        ?>
+
+        Transform Row:
+        <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
+        echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
+        echo 'TablePlus::of("users")<br>';
+        echo '    ->transformRow(function($row){<br>';
+        echo '        $row["name"] = strtoupper($row["name"]);<br>';
+        echo '        return $row;<br>';
+        echo '    })<br>';
+        echo '    ->make();';
+        echo '</code>';
+        echo '</pre>';
+        ?>
+
+        Return Array (No JSON):
+        <?php echo '<pre style="background-color: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 5px; overflow: auto;">';
+        echo '<code style="font-family: Consolas, \'Courier New\', monospace;">';
+        echo '$data = TablePlus::of("users")->make(false);';
         echo '</code>';
         echo '</pre>';
         ?>

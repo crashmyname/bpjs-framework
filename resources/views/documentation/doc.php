@@ -73,11 +73,15 @@
                 <li class="<?= $title == "DataTable" ? "active" : ""?>"><a class="nav-link" href="<?= route('datatable')?>">Data table</a></li>
                 <li class="<?= $title == "Date" ? "active" : ""?>"><a class="nav-link" href="<?= route('date')?>">Date</a></li>
                 <li class="<?= $title == "Http" ? "active" : ""?>"><a class="nav-link" href="<?= route('http')?>">Http</a></li>
+                <li class="<?= $title == "Importer" ? "active" : ""?>"><a class="nav-link" href="<?= route('importer')?>">Importer</a></li>
                 <li class="<?= $title == "Mailer" ? "active" : ""?>"><a class="nav-link" href="<?= route('mailer')?>">Mailer</a></li>
+                <li class="<?= $title == "Queue" ? "active" : ""?>"><a class="nav-link" href="<?= route('queue')?>">Queue</a></li>
                 <li class="<?= $title == "Rate Limiter" ? "active" : ""?>"><a class="nav-link" href="<?= route('ratelimiter')?>">Rate Limiter</a></li>
                 <li class="<?= $title == "Request" ? "active" : ""?>"><a class="nav-link" href="<?= route('request')?>">Request</a></li>
                 <li class="<?= $title == "Response" ? "active" : ""?>"><a class="nav-link" href="<?= route('response')?>">Response</a></li>
+                <li class="<?= $title == "Session" ? "active" : ""?>"><a class="nav-link" href="<?= route('session')?>">Session</a></li>
                 <li class="<?= $title == "Store" ? "active" : ""?>"><a class="nav-link" href="<?= route('store')?>">Store</a></li>
+                <li class="<?= $title == "Tableplus" ? "active" : ""?>"><a class="nav-link" href="<?= route('tableplus')?>">Table Plus</a></li>
                 <li class="<?= $title == "Validator" ? "active" : ""?>"><a class="nav-link" href="<?= route('validator')?>">Validator</a></li>
               </ul>
             </li>

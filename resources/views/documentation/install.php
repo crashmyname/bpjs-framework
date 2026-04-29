@@ -21,14 +21,15 @@
     echo 'APP_NAME=bpjs-framework
 APP_ENV=local
 APP_DEBUG=true
-APP_URL=http://localhost/bpjs-framework
+APP_KEY=
+APP_URL=http://localhost/
 APP_LOCALE=id
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=bpjs
-DB_USERNAME=bpjs
+DB_USERNAME=root
 DB_PASSWORD=
 
 JWT_SECRET=yoursecretkey
@@ -36,9 +37,11 @@ CRYPTO_KEY=yourkey
 
 SESSION_LIFETIME=120
 SESSION_SECURE_COOKIE=false
+SESSION_DRIVER=file
 
 TIMEZONE=Asia/Jakarta
 
+SMTP_DEBUG=0
 SMTP_HOST=smtp.app.com
 SMTP_AUTH=true
 SMTP_EMAIL=youremail@example.com
@@ -97,8 +100,6 @@ API_KEY=';
     echo '     |___web.php';
     echo '<br>';
     echo '     |___api.php';
-    echo '<br>';
-    echo '|___src';
     echo '<br>';
     echo '|___storage';
     echo '<br>';
