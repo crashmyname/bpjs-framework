@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/crashmyname/bpjs-fw.git",
-                "reference": "5c6dc5fcd0a3613e8e44120f18976613124e33ed"
+                "reference": "ed42b82bcfb3a4d209f962d733bdd739821bf0b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/crashmyname/bpjs-fw/zipball/5c6dc5fcd0a3613e8e44120f18976613124e33ed",
-                "reference": "5c6dc5fcd0a3613e8e44120f18976613124e33ed",
+                "url": "https://api.github.com/repos/crashmyname/bpjs-fw/zipball/ed42b82bcfb3a4d209f962d733bdd739821bf0b2",
+                "reference": "ed42b82bcfb3a4d209f962d733bdd739821bf0b2",
                 "shasum": ""
             },
             "require": {
@@ -50,7 +50,7 @@
                 "issues": "https://github.com/crashmyname/bpjs-fw/issues",
                 "source": "https://github.com/crashmyname/bpjs-fw/tree/2.2"
             },
-            "time": "2026-04-28T16:01:41+00:00"
+            "time": "2026-04-29T01:43:49+00:00"
         },
         {
             "name": "composer/pcre",
