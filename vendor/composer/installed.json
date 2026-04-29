@@ -7,12 +7,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/crashmyname/bpjs-fw.git",
-                "reference": "ed42b82bcfb3a4d209f962d733bdd739821bf0b2"
+                "reference": "353e6c63da4df85c0e13d44cd29a719e71cfbc97"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/crashmyname/bpjs-fw/zipball/ed42b82bcfb3a4d209f962d733bdd739821bf0b2",
-                "reference": "ed42b82bcfb3a4d209f962d733bdd739821bf0b2",
+                "url": "https://api.github.com/repos/crashmyname/bpjs-fw/zipball/353e6c63da4df85c0e13d44cd29a719e71cfbc97",
+                "reference": "353e6c63da4df85c0e13d44cd29a719e71cfbc97",
                 "shasum": ""
             },
             "require": {
@@ -21,7 +21,7 @@
                 "phpmailer/phpmailer": "^6.9",
                 "phpoffice/phpspreadsheet": "^3.4"
             },
-            "time": "2026-04-29T01:43:49+00:00",
+            "time": "2026-04-29T02:29:43+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
