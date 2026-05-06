@@ -21,6 +21,7 @@ class TablePlus {
     this.selectedRows = new Set();
     this.columnFilters = {};
     this.savePreferences = config.savePreferences !== false;
+    this.theme = config.theme || 'tailwind'; 
     this.storageKey = config.storageKey || `tableplus_${location.pathname}_${config.url}`;
     this.onRowSelect = config.onRowSelect || null;
     this.customActions = config.customActions || [];
@@ -38,6 +39,36 @@ class TablePlus {
     if (this.savePreferences) {
       this.loadPreferences();
     }
+  }
+
+  getClass(type) {
+    const themes = {
+      tailwind: {
+        button: 'px-3 py-1.5 rounded-md text-sm',
+        buttonPrimary: 'bg-blue-600 text-white hover:bg-blue-700',
+        buttonSecondary: 'bg-gray-200 text-gray-700 hover:bg-gray-300',
+        input: 'border p-2 rounded-md text-sm focus:ring focus:ring-blue-200',
+        select: 'border p-2 rounded-md text-sm',
+        table: 'w-full border-collapse',
+        th: 'border px-3 py-2 bg-gray-100 text-sm',
+        td: 'border px-3 py-2 text-sm',
+        dropdown: 'bg-white border rounded shadow-md',
+      },
+
+      bootstrap: {
+        button: 'btn btn-sm',
+        buttonPrimary: 'btn btn-primary',
+        buttonSecondary: 'btn btn-secondary',
+        input: 'form-control form-control-sm',
+        select: 'form-select form-select-sm',
+        table: 'table table-bordered table-striped',
+        th: '',
+        td: '',
+        dropdown: 'dropdown-menu show',
+      }
+    };
+
+    return themes[this.theme][type] || '';
   }
 
   // ========== PREFERENCES ==========
@@ -491,36 +522,20 @@ class TablePlus {
     list.className = 'max-h-40 overflow-y-auto';
     menu.appendChild(list);
 
-    this.filterElements = this.filterElements || {};
-    this.filterElements[columnKey] = { list, searchInput, menu };
+    // ================= STATE =================
+    let page = 1;
+    let hasMore = true;
+    let loading = false;
+    let searchTerm = '';
+    let uniqueVals = [];
 
-    // === Fungsi ambil nilai unik langsung dari server ===
-    const loadDistinctValues = async () => {
-      try {
-        const response = await fetch(`${this.url}?distinct=${columnKey}`, 
-          { 
-            cache: 'no-store',
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest',
-              'Accept': 'application/json'
-            } 
-          });
-        const json = await response.json();
-        if (json.status === 200 && Array.isArray(json.data)) {
-          console.log()
-          return json.data;
-        }
-        return [];
-      } catch (err) {
-        console.error('Gagal memuat distinct:', err);
-        return [];
-      }
-    };
-
-    // === Fungsi render opsi filter ===
-    const renderOptions = (values) => {
-      list.innerHTML = '';
+    // ================= APPEND (FIX ERROR UTAMA) =================
+    const appendOptions = (values) => {
       values.forEach((val) => {
+        // hindari duplikat
+        if (uniqueVals.includes(val)) return;
+        uniqueVals.push(val);
+
         const lbl = document.createElement('label');
         lbl.className =
           'flex items-center gap-2 px-2 py-1 text-sm hover:bg-gray-100 rounded cursor-pointer';
@@ -531,27 +546,80 @@ class TablePlus {
 
         cb.onchange = () => {
           if (!this.columnFilters[columnKey]) this.columnFilters[columnKey] = [];
+
           if (cb.checked) {
             this.columnFilters[columnKey].push(val);
           } else {
-            this.columnFilters[columnKey] = this.columnFilters[columnKey].filter(
-              (v) => v !== val
-            );
+            this.columnFilters[columnKey] =
+              this.columnFilters[columnKey].filter((v) => v !== val);
           }
+
           this.page = 1;
           this.update();
         };
 
         const span = document.createElement('span');
         span.textContent = val || '(kosong)';
+
         lbl.append(cb, span);
-        list.append(lbl);
+        list.appendChild(lbl);
       });
     };
 
-    let uniqueVals = []; // simpan hasil distinct global utk pencarian lokal
+    // ================= FETCH =================
+    const loadDistinctValues = async (reset = false) => {
+      if (loading || !hasMore) return;
 
-    // === Tombol buka/tutup dropdown ===
+      if (reset) {
+        page = 1;
+        hasMore = true;
+        uniqueVals = [];
+        list.innerHTML = '';
+      }
+
+      loading = true;
+
+      try {
+        const response = await fetch(
+          `${this.url}?distinct=${columnKey}&page=${page}&limit=25&search=${encodeURIComponent(searchTerm)}`,
+          {
+            cache: 'no-store',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'Accept': 'application/json'
+            }
+          }
+        );
+
+        const json = await response.json();
+
+        if (json.status === 200 && Array.isArray(json.data)) {
+          const values = json.data;
+
+          if (values.length < 25) {
+            hasMore = false;
+          }
+
+          appendOptions(values);
+          page++;
+        } else {
+          hasMore = false;
+        }
+      } catch (err) {
+        console.error('Gagal memuat distinct:', err);
+      }
+
+      loading = false;
+    };
+
+    // ================= INFINITE SCROLL =================
+    list.addEventListener('scroll', () => {
+      if (list.scrollTop + list.clientHeight >= list.scrollHeight - 5) {
+        loadDistinctValues();
+      }
+    });
+
+    // ================= OPEN / CLOSE =================
     btn.onclick = async (e) => {
       e.stopPropagation();
 
@@ -562,18 +630,16 @@ class TablePlus {
         return;
       }
 
-      // Ambil data distinct terbaru dari server
-      uniqueVals = await loadDistinctValues();
-      renderOptions(uniqueVals);
+      await loadDistinctValues(true);
       searchInput.value = '';
 
       const rect = btn.getBoundingClientRect();
       menu.style.position = 'absolute';
       menu.style.top = `${rect.bottom + window.scrollY}px`;
-      menu.style.left = `${rect.right - menu.offsetWidth + window.scrollX}px`;
+      menu.style.left = `${rect.right - 200 + window.scrollX}px`;
       menu.style.zIndex = 9999;
-      menu.classList.remove('hidden');
 
+      menu.classList.remove('hidden');
       document.body.appendChild(menu);
 
       const closeHandler = (ev) => {
@@ -583,15 +649,14 @@ class TablePlus {
           document.removeEventListener('click', closeHandler);
         }
       };
+
       setTimeout(() => document.addEventListener('click', closeHandler), 50);
     };
 
+    // ================= SEARCH =================
     searchInput.oninput = (e) => {
-      const term = e.target.value.toLowerCase();
-      const filtered = uniqueVals.filter((v) =>
-        String(v ?? '').toLowerCase().includes(term)
-      );
-      renderOptions(filtered);
+      searchTerm = e.target.value;
+      loadDistinctValues(true);
     };
 
     return wrapper;

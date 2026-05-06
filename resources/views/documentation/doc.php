@@ -70,6 +70,7 @@
                 <li class="<?= $title == "Cors" ? "active" : ""?>"><a class="nav-link" href="<?= route('cors')?>">Cors</a></li>
                 <li class="<?= $title == "Crypto" ? "active" : ""?>"><a class="nav-link" href="<?= route('crypto')?>">Crypto</a></li>
                 <li class="<?= $title == "CSRF" ? "active" : ""?>"><a class="nav-link" href="<?= route('csrf')?>">Csrf</a></li>
+                <li class="<?= $title == "DB" ? "active" : ""?>"><a class="nav-link" href="<?= route('db')?>">DB</a></li>
                 <li class="<?= $title == "DataTable" ? "active" : ""?>"><a class="nav-link" href="<?= route('datatable')?>">Data table</a></li>
                 <li class="<?= $title == "Date" ? "active" : ""?>"><a class="nav-link" href="<?= route('date')?>">Date</a></li>
                 <li class="<?= $title == "Http" ? "active" : ""?>"><a class="nav-link" href="<?= route('http')?>">Http</a></li>

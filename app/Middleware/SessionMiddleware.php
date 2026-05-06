@@ -3,6 +3,10 @@ namespace Middlewares;
 
 class SessionMiddleware {
     public static function start() {
+        if(session_status() === PHP_SESSION_ACTIVE){
+            session_write_close();
+        }
+        
         if (session_status() === PHP_SESSION_NONE) {
             $config = config('session');
             if (!is_array($config)) {
@@ -37,6 +41,10 @@ class SessionMiddleware {
             ]);
 
             session_start();
+            if (!self::validateDeviceFingerprint()) {
+                self::destroy();
+                session_start();
+            }
 
             if (!isset($_SESSION['csrf_token'])) {
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));

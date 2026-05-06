@@ -63,6 +63,10 @@ Route::get('/dokumentasi/support/csrf', function(){
     $title = "CSRF";
     View::render('documentation/support/csrf',['title'=>$title],'documentation/doc');
 })->name('csrf');
+Route::get('/dokumentasi/support/db', function(){
+    $title = "DB";
+    View::render('documentation/support/db',['title'=>$title],'documentation/doc');
+})->name('db');
 Route::get('/dokumentasi/support/datatable', function(){
     $title = "DataTable";
     View::render('documentation/support/datatables',['title'=>$title],'documentation/doc');

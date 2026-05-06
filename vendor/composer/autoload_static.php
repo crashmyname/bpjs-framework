@@ -7,6 +7,7 @@ namespace Composer\Autoload;
 class ComposerStaticInit58a439baa63ce317551a65cb5db0a5b6
 {
     public static $files = array (
+        '662a729f963d39afe703c9d9b7ab4a8c' => __DIR__ . '/..' . '/symfony/polyfill-php83/bootstrap.php',
         'b773a4250ce349b97f3c0db311920dbc' => __DIR__ . '/..' . '/bpjs/framework/src/helper.php',
     );
 
@@ -19,21 +20,44 @@ class ComposerStaticInit58a439baa63ce317551a65cb5db0a5b6
         array (
             'Whoops\\' => 7,
         ),
+        'T' => 
+        array (
+            'Temporal\\' => 9,
+        ),
+        'S' => 
+        array (
+            'Symfony\\Polyfill\\Php83\\' => 23,
+            'Spiral\\RoadRunner\\Http\\' => 23,
+            'Spiral\\RoadRunner\\' => 18,
+            'Spiral\\Goridge\\' => 15,
+        ),
         'R' => 
         array (
+            'RoadRunner\\' => 11,
             'Region\\WilayahID\\' => 17,
         ),
         'P' => 
         array (
             'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
+            'Psr\\Http\\Message\\' => 17,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
             'PHPMailer\\PHPMailer\\' => 20,
+        ),
+        'N' => 
+        array (
+            'Nyholm\\Psr7\\' => 12,
         ),
         'M' => 
         array (
             'Middlewares\\' => 12,
             'Matrix\\' => 7,
+        ),
+        'G' => 
+        array (
+            'Google\\Protobuf\\' => 16,
+            'GPBMetadata\\Google\\Protobuf\\' => 28,
+            'GPBMetadata\\' => 12,
         ),
         'F' => 
         array (
@@ -64,6 +88,30 @@ class ComposerStaticInit58a439baa63ce317551a65cb5db0a5b6
         array (
             0 => __DIR__ . '/..' . '/filp/whoops/src/Whoops',
         ),
+        'Temporal\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/roadrunner-php/roadrunner-api-dto/generated/Temporal',
+        ),
+        'Symfony\\Polyfill\\Php83\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-php83',
+        ),
+        'Spiral\\RoadRunner\\Http\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/spiral/roadrunner-http/src',
+        ),
+        'Spiral\\RoadRunner\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/spiral/roadrunner-worker/src',
+        ),
+        'Spiral\\Goridge\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/spiral/goridge/src',
+        ),
+        'RoadRunner\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/roadrunner-php/roadrunner-api-dto/generated/RoadRunner',
+        ),
         'Region\\WilayahID\\' => 
         array (
             0 => __DIR__ . '/..' . '/fadli-dev/wilayah-id/src',
@@ -76,6 +124,11 @@ class ComposerStaticInit58a439baa63ce317551a65cb5db0a5b6
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
         ),
+        'Psr\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
         'PhpOffice\\PhpSpreadsheet\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
@@ -84,6 +137,10 @@ class ComposerStaticInit58a439baa63ce317551a65cb5db0a5b6
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
+        'Nyholm\\Psr7\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/nyholm/psr7/src',
+        ),
         'Middlewares\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app/Middleware',
@@ -91,6 +148,18 @@ class ComposerStaticInit58a439baa63ce317551a65cb5db0a5b6
         'Matrix\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
+        ),
+        'Google\\Protobuf\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/google/protobuf/src/Google/Protobuf',
+        ),
+        'GPBMetadata\\Google\\Protobuf\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/google/protobuf/src/GPBMetadata/Google/Protobuf',
+        ),
+        'GPBMetadata\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/roadrunner-php/roadrunner-api-dto/generated/GPBMetadata',
         ),
         'Firebase\\JWT\\' => 
         array (
@@ -120,6 +189,17 @@ class ComposerStaticInit58a439baa63ce317551a65cb5db0a5b6
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'DateError' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateError.php',
+        'DateException' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateException.php',
+        'DateInvalidOperationException' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateInvalidOperationException.php',
+        'DateInvalidTimeZoneException' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateInvalidTimeZoneException.php',
+        'DateMalformedIntervalStringException' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateMalformedIntervalStringException.php',
+        'DateMalformedPeriodStringException' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateMalformedPeriodStringException.php',
+        'DateMalformedStringException' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateMalformedStringException.php',
+        'DateObjectError' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateObjectError.php',
+        'DateRangeError' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateRangeError.php',
+        'Override' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/Override.php',
+        'SQLite3Exception' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/SQLite3Exception.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
