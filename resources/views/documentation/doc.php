@@ -86,6 +86,7 @@
                 <li class="<?= $title == "Validator" ? "active" : ""?>"><a class="nav-link" href="<?= route('validator')?>">Validator</a></li>
               </ul>
             </li>
+            <li class="<?= $title == "Table Plus" ? "active" : ""?>"><a class="nav-link" href="<?= route('table-plus')?>"><i class="far fa-square"></i> <span>Table Plus</span></a></li>
             <li class="<?= $title == "View" ? "active" : ""?>"><a class="nav-link" href="<?= route('view')?>"><i class="far fa-square"></i> <span>View</span></a></li>
             <li class="<?= $title == "Route" ? "active" : ""?>"><a class="nav-link" href="<?= route('route')?>"><i class="far fa-square"></i> <span>Route</span></a></li>
             <li class="<?= $title == "Env" ? "active" : ""?>"><a class="nav-link" href="<?= route('env')?>"><i class="far fa-square"></i> <span>ENV</span></a></li>

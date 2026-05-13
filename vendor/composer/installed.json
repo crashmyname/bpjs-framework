@@ -2,26 +2,26 @@
     "packages": [
         {
             "name": "bpjs/framework",
-            "version": "2.2",
-            "version_normalized": "2.2.0.0",
+            "version": "2.3",
+            "version_normalized": "2.3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/crashmyname/bpjs-fw.git",
-                "reference": "1b9a47ce5495225abc90efdcff7f5eb095516b99"
+                "reference": "75e570b29e9d96fcc430834b0e185cfc14d7c9c4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/crashmyname/bpjs-fw/zipball/1b9a47ce5495225abc90efdcff7f5eb095516b99",
-                "reference": "1b9a47ce5495225abc90efdcff7f5eb095516b99",
+                "url": "https://api.github.com/repos/crashmyname/bpjs-fw/zipball/75e570b29e9d96fcc430834b0e185cfc14d7c9c4",
+                "reference": "75e570b29e9d96fcc430834b0e185cfc14d7c9c4",
                 "shasum": ""
             },
             "require": {
                 "filp/whoops": "^2.18",
-                "php": "^8.0",
+                "php": "^8.1",
                 "phpmailer/phpmailer": "^6.9",
                 "phpoffice/phpspreadsheet": "^3.4"
             },
-            "time": "2026-05-06T05:14:35+00:00",
+            "time": "2026-05-13T07:37:26+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -45,7 +45,7 @@
             "description": "framework support for bpjs",
             "support": {
                 "issues": "https://github.com/crashmyname/bpjs-fw/issues",
-                "source": "https://github.com/crashmyname/bpjs-fw/tree/2.2"
+                "source": "https://github.com/crashmyname/bpjs-fw/tree/2.3"
             },
             "install-path": "../bpjs/framework"
         },

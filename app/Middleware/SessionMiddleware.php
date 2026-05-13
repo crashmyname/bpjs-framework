@@ -3,10 +3,6 @@ namespace Middlewares;
 
 class SessionMiddleware {
     public static function start() {
-        if(session_status() === PHP_SESSION_ACTIVE){
-            session_write_close();
-        }
-        
         if (session_status() === PHP_SESSION_NONE) {
             $config = config('session');
             if (!is_array($config)) {
@@ -41,10 +37,6 @@ class SessionMiddleware {
             ]);
 
             session_start();
-            if (!self::validateDeviceFingerprint()) {
-                self::destroy();
-                session_start();
-            }
 
             if (!isset($_SESSION['csrf_token'])) {
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -105,14 +97,31 @@ class SessionMiddleware {
             session_destroy(); 
         }
     }
-    public static function validateDeviceFingerprint() {
-        $fingerprint = md5($_SERVER['HTTP_USER_AGENT'] . $_SERVER['REMOTE_ADDR']);
+    public static function validateDeviceFingerprint(): bool
+    {
+        $config = config('auth.device_fingerprint', []);
 
-        if (self::get('device_fingerprint') !== $fingerprint) {
-            self::destroy(); 
-            return false;
+        if (!($config['enabled'] ?? false)) {
+            return true;
         }
-        return true;
+
+        $fingerprint = md5(
+            ($_SERVER['HTTP_USER_AGENT'] ?? '') .
+            ($_SERVER['REMOTE_ADDR'] ?? '')
+        );
+
+        if (!self::get('device_fingerprint')) {
+            self::set('device_fingerprint', $fingerprint);
+            return true;
+        }
+
+        $match = self::get('device_fingerprint') === $fingerprint;
+
+        if (!($config['strict'] ?? false)) {
+            return true;
+        }
+
+        return $match;
     }
 
     public static function storeDeviceFingerprint() {

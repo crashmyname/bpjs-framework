@@ -66,4 +66,8 @@ return [
         'max_attempts' => 5,
         'decay_minutes' => 1,
     ],
+    'device_fingerprint' => [
+        'enabled' => false,
+        'strict' => false
+    ]
 ];

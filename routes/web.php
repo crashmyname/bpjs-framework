@@ -31,6 +31,10 @@ Route::get('/dokumentasi/route', function(){
     $title = "Route";
     View::render('documentation/route',['title'=>$title],'documentation/doc');
 })->name('route');
+Route::get('/dokumentasi/table-plus', function(){
+    $title = "Table Plus";
+    View::render('documentation/table-plus',['title'=>$title]);
+})->name('table-plus');
 Route::get('/dokumentasi/env', function(){
     $title = "Env";
     View::render('documentation/env',['title'=>$title],'documentation/doc');

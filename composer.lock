@@ -4,25 +4,25 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "900ee290683951deb8339eb584e23911",
+    "content-hash": "3bb8779589d69b2aa551069ef9fd7ba4",
     "packages": [
         {
             "name": "bpjs/framework",
-            "version": "2.2",
+            "version": "2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/crashmyname/bpjs-fw.git",
-                "reference": "1b9a47ce5495225abc90efdcff7f5eb095516b99"
+                "reference": "75e570b29e9d96fcc430834b0e185cfc14d7c9c4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/crashmyname/bpjs-fw/zipball/1b9a47ce5495225abc90efdcff7f5eb095516b99",
-                "reference": "1b9a47ce5495225abc90efdcff7f5eb095516b99",
+                "url": "https://api.github.com/repos/crashmyname/bpjs-fw/zipball/75e570b29e9d96fcc430834b0e185cfc14d7c9c4",
+                "reference": "75e570b29e9d96fcc430834b0e185cfc14d7c9c4",
                 "shasum": ""
             },
             "require": {
                 "filp/whoops": "^2.18",
-                "php": "^8.0",
+                "php": "^8.1",
                 "phpmailer/phpmailer": "^6.9",
                 "phpoffice/phpspreadsheet": "^3.4"
             },
@@ -48,9 +48,9 @@
             "description": "framework support for bpjs",
             "support": {
                 "issues": "https://github.com/crashmyname/bpjs-fw/issues",
-                "source": "https://github.com/crashmyname/bpjs-fw/tree/2.2"
+                "source": "https://github.com/crashmyname/bpjs-fw/tree/2.3"
             },
-            "time": "2026-05-06T05:14:35+00:00"
+            "time": "2026-05-13T07:37:26+00:00"
         },
         {
             "name": "composer/pcre",
@@ -1468,7 +1468,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.0"
+        "php": "^8.1"
     },
     "platform-dev": [],
     "plugin-api-version": "2.6.0"
