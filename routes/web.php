@@ -81,7 +81,7 @@ Route::get('/dokumentasi/support/date', function(){
 })->name('date');
 Route::get('/dokumentasi/support/http', function(){
     $title = "Http";
-    View::render('documentation/support/http',['title'=>$title],'documentation/doc');
+    View::render('documentation/support/http',['title'=>$title]);
 })->name('http');
 Route::get('/dokumentasi/support/mailer', function(){
     $title = "Mailer";

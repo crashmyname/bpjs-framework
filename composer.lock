@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3bb8779589d69b2aa551069ef9fd7ba4",
+    "content-hash": "e36be22f516a6bec83e3c18486c9c95a",
     "packages": [
         {
             "name": "bpjs/framework",
-            "version": "2.3",
+            "version": "2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/crashmyname/bpjs-fw.git",
-                "reference": "75e570b29e9d96fcc430834b0e185cfc14d7c9c4"
+                "reference": "23325f773028314a78a79c617807d17a2d516f87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/crashmyname/bpjs-fw/zipball/75e570b29e9d96fcc430834b0e185cfc14d7c9c4",
-                "reference": "75e570b29e9d96fcc430834b0e185cfc14d7c9c4",
+                "url": "https://api.github.com/repos/crashmyname/bpjs-fw/zipball/23325f773028314a78a79c617807d17a2d516f87",
+                "reference": "23325f773028314a78a79c617807d17a2d516f87",
                 "shasum": ""
             },
             "require": {
@@ -48,9 +48,9 @@
             "description": "framework support for bpjs",
             "support": {
                 "issues": "https://github.com/crashmyname/bpjs-fw/issues",
-                "source": "https://github.com/crashmyname/bpjs-fw/tree/2.3"
+                "source": "https://github.com/crashmyname/bpjs-fw/tree/2.4"
             },
-            "time": "2026-05-13T07:37:26+00:00"
+            "time": "2026-05-16T09:23:20+00:00"
         },
         {
             "name": "composer/pcre",
@@ -1158,16 +1158,16 @@
         },
         {
             "name": "spiral/roadrunner",
-            "version": "v2025.1.13",
+            "version": "v2025.1.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/roadrunner-server/roadrunner.git",
-                "reference": "cb5e9e331148fac77d2478134fa99e51838f24bb"
+                "reference": "3853ad693522e82d53d62950e5f1315402c910f2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/roadrunner-server/roadrunner/zipball/cb5e9e331148fac77d2478134fa99e51838f24bb",
-                "reference": "cb5e9e331148fac77d2478134fa99e51838f24bb",
+                "url": "https://api.github.com/repos/roadrunner-server/roadrunner/zipball/3853ad693522e82d53d62950e5f1315402c910f2",
+                "reference": "3853ad693522e82d53d62950e5f1315402c910f2",
                 "shasum": ""
             },
             "type": "metapackage",
@@ -1195,7 +1195,7 @@
                 "chat": "https://discord.gg/V6EK4he",
                 "docs": "https://docs.roadrunner.dev/",
                 "issues": "https://github.com/roadrunner-server/roadrunner/issues",
-                "source": "https://github.com/roadrunner-server/roadrunner/tree/v2025.1.13"
+                "source": "https://github.com/roadrunner-server/roadrunner/tree/v2025.1.14"
             },
             "funding": [
                 {
@@ -1203,7 +1203,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-04-17T09:50:24+00:00"
+            "time": "2026-05-15T13:20:01+00:00"
         },
         {
             "name": "spiral/roadrunner-http",
