@@ -28,7 +28,7 @@ return [
     |--------------------------------------------------------------------------
     | Field yang digunakan untuk menjelaskan app url kamu.
     */
-    'url' => env('APP_URL', 'http://localhost'),
+    // 'url' => env('APP_URL', 'http://localhost'),
     /*
     |--------------------------------------------------------------------------
     | timezone

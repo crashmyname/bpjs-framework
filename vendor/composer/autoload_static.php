@@ -7,26 +7,13 @@ namespace Composer\Autoload;
 class ComposerStaticInit58a439baa63ce317551a65cb5db0a5b6
 {
     public static $prefixLengthsPsr4 = array (
-        'Z' => 
-        array (
-            'ZipStream\\' => 10,
-        ),
         'R' => 
         array (
             'Region\\WilayahID\\' => 17,
         ),
-        'P' => 
-        array (
-            'Psr\\SimpleCache\\' => 16,
-            'Psr\\Http\\Message\\' => 17,
-            'Psr\\Http\\Client\\' => 16,
-            'PhpOffice\\PhpSpreadsheet\\' => 25,
-            'PHPMailer\\PHPMailer\\' => 20,
-        ),
         'M' => 
         array (
             'Middlewares\\' => 12,
-            'Matrix\\' => 7,
         ),
         'H' => 
         array (
@@ -39,8 +26,6 @@ class ComposerStaticInit58a439baa63ce317551a65cb5db0a5b6
         'C' => 
         array (
             'Config\\' => 7,
-            'Composer\\Pcre\\' => 14,
-            'Complex\\' => 8,
         ),
         'B' => 
         array (
@@ -53,42 +38,13 @@ class ComposerStaticInit58a439baa63ce317551a65cb5db0a5b6
     );
 
     public static $prefixDirsPsr4 = array (
-        'ZipStream\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
-        ),
         'Region\\WilayahID\\' => 
         array (
             0 => __DIR__ . '/..' . '/fadli-dev/wilayah-id/src',
         ),
-        'Psr\\SimpleCache\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/simple-cache/src',
-        ),
-        'Psr\\Http\\Message\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
-        ),
-        'Psr\\Http\\Client\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/http-client/src',
-        ),
-        'PhpOffice\\PhpSpreadsheet\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
-        ),
-        'PHPMailer\\PHPMailer\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
-        ),
         'Middlewares\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app/Middleware',
-        ),
-        'Matrix\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
         ),
         'Helpers\\' => 
         array (
@@ -101,14 +57,6 @@ class ComposerStaticInit58a439baa63ce317551a65cb5db0a5b6
         'Config\\' => 
         array (
             0 => __DIR__ . '/../..' . '/config',
-        ),
-        'Composer\\Pcre\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/composer/pcre/src',
-        ),
-        'Complex\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
         ),
         'Bpjs\\Core\\' => 
         array (
