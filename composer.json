@@ -5,7 +5,8 @@
     "require": {
         "php" : "^8.1",
         "firebase/php-jwt": "^6.10",
-        "fadli-dev/wilayah-id": "^1.0"
+        "fadli-dev/wilayah-id": "^1.0",
+        "bpjs/framework": "^2.5"
     },
     "license": "MIT",
     "autoload": {
