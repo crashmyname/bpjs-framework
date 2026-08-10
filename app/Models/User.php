@@ -6,6 +6,6 @@ use Bpjs\Framework\Helpers\BaseModel;
 class User extends BaseModel {
     
     // Protected table Users
-    public $table = 'users';
-    protected $primaryKey = 'users_id';
+    protected public $table = 'users';
+    protected public $primaryKey = 'users_id';
 }
